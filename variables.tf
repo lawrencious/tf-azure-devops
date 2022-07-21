@@ -20,10 +20,6 @@ variable private_ip_vm_ni {
   default = "10.1.0.254"
 }
 
-variable private_ip_aks_ni {
-  default = "10.1.1.254"
-}
-
 variable private_ip_inner_lb {
   default = "10.1.2.254"
 }

@@ -88,19 +88,6 @@ resource "azurerm_lb_backend_address_pool_address" "be_pool_vm_address" {
   ip_address = azurerm_public_ip.vm_ip.ip_address
 }
 
-resource "azurerm_network_interface" "aks_ni" {
-  name = "aks_ni"
-  location = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-
-  ip_configuration {
-    name = "aks_ni_configuration"
-    subnet_id = azurerm_subnet.aks_subnet.id
-    private_ip_address_allocation = "Static"
-    private_ip_address = var.private_ip_aks_ni
-  }
-}
-
 resource "azurerm_network_interface_nat_rule_association" "vm_nat_rule" {
   network_interface_id = azurerm_network_interface.vm_ni.id
   ip_configuration_name = azurerm_network_interface.vm_ni.ip_configuration[0].name
