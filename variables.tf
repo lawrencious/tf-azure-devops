@@ -10,6 +10,10 @@ variable aks_subnet {
   default = "10.1.1.0/24"
 }
 
+variable inner_lb_subnet {
+  default = "10.1.2.0/24"
+}
+
 # Azure reserves the first four and last IP address of a subnet
 # Using the second last one for each subnet
 variable private_ip_vm_ni {
@@ -18,6 +22,10 @@ variable private_ip_vm_ni {
 
 variable private_ip_aks_ni {
   default = "10.1.1.254"
+}
+
+variable private_ip_inner_lb {
+  default = "10.1.2.254"
 }
 
 variable username {
