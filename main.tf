@@ -43,7 +43,6 @@ resource "azurerm_lb" "inner_lb" {
   name = "inner_lb"
   location = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  sku = "Standard"
 
   frontend_ip_configuration {
     name = "img_repo"
@@ -74,18 +73,6 @@ resource "azurerm_network_interface" "vm_ni" {
     private_ip_address_allocation = "Static"
     private_ip_address = var.private_ip_vm_ni
   }
-}
-
-resource "azurerm_lb_backend_address_pool" "be_pool" {
-  name = "inner_lb_be_pool"
-  loadbalancer_id = azurerm_lb.inner_lb.id
-}
-
-resource "azurerm_lb_backend_address_pool_address" "be_pool_vm_address" {
-  name = "be_pool_vm_address"
-  backend_address_pool_id = azurerm_lb_backend_address_pool.be_pool.id
-  virtual_network_id = azurerm_virtual_network.vn.id
-  ip_address = azurerm_public_ip.vm_ip.ip_address
 }
 
 resource "azurerm_network_interface_nat_rule_association" "vm_nat_rule" {
@@ -121,6 +108,18 @@ resource "azurerm_network_security_group" "vm_nsg" {
     destination_port_range = "*"
     source_address_prefix = var.vm_subnet
     destination_address_prefixes = [azurerm_lb.inner_lb.private_ip_address]
+  }
+
+  security_rule {
+    name = "SSH"
+    priority = 104
+    direction = "Inbound"
+    access = "Allow"
+    protocol = "Tcp"
+    source_port_range = "*"
+    destination_port_range = "22"
+    source_address_prefix = "*"
+    destination_address_prefix = azurerm_public_ip.vm_ip.ip_address
   }
 }
 
