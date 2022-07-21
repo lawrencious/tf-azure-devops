@@ -137,44 +137,37 @@ resource "azurerm_network_security_group" "vm_nsg" {
   }
 }
 
-resource "azurerm_network_security_group" "aks_nsg" {
-  name = "aks_nsg"
-  location = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+resource "azurerm_network_security_rule" "img_req" { # AKS HTTPS requesting img to ImgRepo
+  name = "ImgReq"
+  priority = 102
+  direction = "Outbound"
+  access = "Allow"
+  protocol = "Tcp"
+  source_port_range = "*"
+  destination_port_range = "443"
+  source_address_prefix = var.aks_subnet
+  destination_address_prefixes = [azurerm_lb.inner_lb.private_ip_address]
+  resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group # reference the auto-generated RG containing the resources for this cluster
+  network_security_group_name = data.azurerm_resources.aks_nsg_name.resources.0.name
+}
 
-  security_rule { # requests img to ImgRepo
-    name = "ImgReq"
-    priority = 102
-    direction = "Outbound"
-    access = "Allow"
-    protocol = "Tcp"
-    source_port_range = "*"
-    destination_port_range = "443"
-    source_address_prefix = var.aks_subnet
-    destination_address_prefixes = [azurerm_lb.inner_lb.private_ip_address]
-  }
-
-  security_rule { # accepts HTTPS traffic from ImgRepo
-    name = "ImgReqAccept"
-    priority = 103
-    direction = "Inbound"
-    access = "Allow"
-    protocol = "Tcp"
-    source_port_range = "443"
-    destination_port_range = "*"
-    source_address_prefixes = [azurerm_lb.inner_lb.private_ip_address]
-    destination_address_prefix = var.aks_subnet
-  }
+resource "azurerm_network_security_rule" "img_req_acc" { # accepts HTTPS traffic from ImgRepo to AKS
+  name = "ImgReqAccept"
+  priority = 103
+  direction = "Inbound"
+  access = "Allow"
+  protocol = "Tcp"
+  source_port_range = "443"
+  destination_port_range = "*"
+  source_address_prefixes = [azurerm_lb.inner_lb.private_ip_address]
+  destination_address_prefix = var.aks_subnet
+  resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group # reference the auto-generated RG containing the resources for this cluster
+  network_security_group_name = data.azurerm_resources.aks_nsg_name.resources.0.name
 }
 
 resource "azurerm_network_interface_security_group_association" "vm_ni_nsg_association" {
   network_interface_id = azurerm_network_interface.vm_ni.id
   network_security_group_id = azurerm_network_security_group.vm_nsg.id
-}
-
-resource "azurerm_network_interface_security_group_association" "aks_ni_nsg_association" {
-  network_interface_id = azurerm_network_interface.aks_ni.id
-  network_security_group_id = azurerm_network_security_group.aks_nsg.id
 }
 
 resource "azurerm_linux_virtual_machine" "vm" {
