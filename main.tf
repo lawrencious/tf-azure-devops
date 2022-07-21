@@ -107,12 +107,12 @@ resource "azurerm_network_interface_nat_rule_association" "vm_nat_rule" {
   nat_rule_id = azurerm_lb_nat_rule.vm_nat_rule.id
 }
 
-resource "azurerm_network_security_group" "nsg" {
-  name                = "nsg"
-  location            = azurerm_resource_group.rg.location
+resource "azurerm_network_security_group" "vm_nsg" {
+  name = "vm_nsg"
+  location = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
-  security_rule {
+  security_rule { # accepts HTTPS requests from AKS
     name = "HTTPS-In"
     priority = 100
     direction = "Inbound"
@@ -124,7 +124,7 @@ resource "azurerm_network_security_group" "nsg" {
     destination_address_prefix = var.vm_subnet
   }
 
-  security_rule {
+  security_rule { # answers HTTPS requests from AKS
     name = "HTTPS-Out"
     priority = 101
     direction = "Outbound"
@@ -137,27 +137,48 @@ resource "azurerm_network_security_group" "nsg" {
   }
 }
 
-resource "azurerm_network_interface_security_group_association" "ni_nsg_association" {
-  network_interface_id      = azurerm_network_interface.vm_ni.id
-  network_security_group_id = azurerm_network_security_group.nsg.id
-}
-
-/*resource "azurerm_route_table" "rt" {
-  name = "rt"
+resource "azurerm_network_security_group" "aks_nsg" {
+  name = "aks_nsg"
   location = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+
+  security_rule { # requests img to ImgRepo
+    name = "ImgReq"
+    priority = 102
+    direction = "Outbound"
+    access = "Allow"
+    protocol = "Tcp"
+    source_port_range = "*"
+    destination_port_range = "443"
+    source_address_prefix = var.aks_subnet
+    destination_address_prefixes = [azurerm_lb.inner_lb.private_ip_address]
+  }
+
+  security_rule { # accepts HTTPS traffic from ImgRepo
+    name = "ImgReqAccept"
+    priority = 103
+    direction = "Inbound"
+    access = "Allow"
+    protocol = "Tcp"
+    source_port_range = "443"
+    destination_port_range = "*"
+    source_address_prefixes = [azurerm_lb.inner_lb.private_ip_address]
+    destination_address_prefix = var.aks_subnet
+  }
 }
 
-resource "azurerm_route" "route" {
-  name = "route"
-  resource_group_name = azurerm_resource_group.rg.name
-  route_table_name = azurerm_route_table.rt.name
-  address_prefix = azurerm_subnet.aks_subnet.address_prefixes[0]
-  next_hop_type = "VnetLocal"
-}*/
+resource "azurerm_network_interface_security_group_association" "vm_ni_nsg_association" {
+  network_interface_id = azurerm_network_interface.vm_ni.id
+  network_security_group_id = azurerm_network_security_group.vm_nsg.id
+}
+
+resource "azurerm_network_interface_security_group_association" "aks_ni_nsg_association" {
+  network_interface_id = azurerm_network_interface.aks_ni.id
+  network_security_group_id = azurerm_network_security_group.aks_nsg.id
+}
 
 resource "azurerm_linux_virtual_machine" "vm" {
-  name = "NexusRepo"
+  name = "ImgRepo"
   resource_group_name = azurerm_resource_group.rg.name
   location = azurerm_resource_group.rg.location
   size = "Standard_B1s"
