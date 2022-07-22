@@ -1,8 +1,15 @@
 pool:
-  name: Azure Pipelines
+
 
 steps:
 # Building and pushing images to image repository
+- task: Docker@2
+  inputs:
+    containerRegistry: 'docker-jfrog-artifactory'
+    repository: 'default-docker-remote/'
+    command: 'buildAndPush'
+    dockerfile: '**/Dockerfile'
+
 - task: Docker@0
   displayName: 'Build a container image'
   inputs:
