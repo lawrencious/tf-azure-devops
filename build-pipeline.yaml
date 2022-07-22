@@ -1,6 +1,5 @@
 pool:
 
-
 steps:
 # Building and pushing images to image repository
 - task: Docker@2
@@ -51,3 +50,15 @@ steps:
 # Publishing artifacts
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifacts: drop'
+
+- task: Kubernetes@1
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscriptionEndpoint: 'Azure for Students (2036e40b-3de5-45c0-b683-a77c62b17380)'
+    azureResourceGroup: 'rg'
+    kubernetesCluster: 'aks'
+    command: 'apply'
+    arguments: '-f "manifest.yaml"'
+    secretType: 'dockerRegistry'
+    containerRegistryType: 'Azure Container Registry'
+    namespace: 'nameSpacek8s'
