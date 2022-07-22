@@ -110,7 +110,7 @@ resource "azurerm_network_security_group" "vm_nsg" {
     destination_address_prefixes = [azurerm_lb.inner_lb.private_ip_address]
   }
 
-  security_rule {
+  security_rule { #trying to access VM
     name = "SSH"
     priority = 104
     direction = "Inbound"
