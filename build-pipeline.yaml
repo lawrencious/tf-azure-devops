@@ -1,0 +1,81 @@
+trigger:
+- main
+
+stages:
+  - stage: BuildAndPush
+      displayName: 'Building and pushing images'
+      steps:
+      # OPTION 1: using docker-compose, if a docker-compose.yml exists in repo
+      - task: DockerCompose@0
+        displayName: 'Building images'
+        inputs:
+          containerregistrytype: 'Container Registry'
+          dockerRegistryEndpoint: 'docker-jfrog-artifactory'
+          dockerComposeFile: '**/docker-compose.yml'
+          action: 'Build services'
+
+      - task: DockerCompose@0
+        displayName: 'Pushing images'
+        inputs:
+          containerregistrytype: 'Container Registry'
+          dockerRegistryEndpoint: 'docker-jfrog-artifactory'
+          dockerComposeFile: '**/docker-compose.yml'
+          action: 'Push services'
+
+      # OPTION 2: multiple Docker tasks, a buildAndPush for each image to build and push
+      - task: Docker@2
+        displayName: 'Build and push container image'
+        inputs:
+          containerRegistry: 'docker-jfrog-artifactory'
+          repository: 'default-docker-remote/'
+          command: 'buildAndPush'
+          dockerfile: '**/Dockerfile'
+      
+      # Finally, publish images as artifacts
+      - task: PublishPipelineArtifact@1
+        inputs:
+          artifactName: 'manifests'
+          path: 'manifests'
+
+  stage: Deploy
+    dependsOn: Build
+
+    # First, downloads artifacts
+    # OPTION 1: downloads BUILD artifacts
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        buildType: 'current'
+        buildVersionToDownload: 'latest'
+        downloadType: 'specific'  # Downloads ALL artifacts of specified build
+        downloadPath: '$(System.DefaultWorkingDirectory)/manifests'
+    
+    # OPTION2: downloads PIPELINE artifacts
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        itemPattern: '**' # Recursive matching
+        targetPath: '$(Pipeline.Workspace)/manifests'
+
+    # Then, creates Secret
+    - task: KubernetesManifest@0
+      inputs:
+        action: 'createSecret'
+        kubernetesServiceConnection: 'my_aks_connection'
+        namespace: 'default'
+        secretType: 'dockerRegistry'
+        secretName: 'foo_secret'
+        dockerRegistryEndpoint: 'docker-jfrog-artifactory'
+
+    # Finally, deploys containers
+    - task: KubernetesManifest@0
+      inputs:
+        action: 'deploy'
+        kubernetesServiceConnection: 'my_aks_connection'
+        namespace: 'default'
+        manifests: | 
+          ./manifest.yaml
+        containers: | # each-syntax might be useful
+          <URL-to-repository>/<imgName>:<tag>
+        imagePullSecrets: | 
+          foo_secret
