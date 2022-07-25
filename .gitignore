@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Logs and others from this very folder
+.terraform/
+.terraform.lock.hcl
