@@ -22,43 +22,58 @@ steps:
     dockerRegistryConnection: 'docker-jfrog-artifactory'
     action: 'Push an image'
 
-# Pulling images and packaging Helm Chart(s)
-- task: HelmInstaller@0 # Installs 2.9.1, but v3 pretty different. Change it
-  displayName: 'Install Helm 2.9.1'
-  inputs:
-    helmVersion: 2.9.1
-    kubectlVersion: 1.10.3
-    checkLatestKubectl: false
-
-- task: HelmDeploy@0  # helm init removed from v3, remember it
-  displayName: 'helm init --client-only'
-  inputs:
-    azureSubscription: 'Azure for Students (2036e40b-3de5-45c0-b683-a77c62b17380)'
-    azureResourceGroup: rg
-    kubernetesCluster: aks
-    command: init
-    upgradeTiller: false
-    arguments: '--client-only'
-
-- task: HelmDeploy@0
-  displayName: 'helm package'
-  inputs:
-    command: package
-    chartPath: .  # Not a folder, put it just to make GUI happy
-    save: false
-
 # Publishing artifacts
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifacts: drop'
-
-- task: Kubernetes@1
   inputs:
-    connectionType: 'Azure Resource Manager'
-    azureSubscriptionEndpoint: 'Azure for Students (2036e40b-3de5-45c0-b683-a77c62b17380)'
-    azureResourceGroup: 'rg'
-    kubernetesCluster: 'aks'
-    command: 'apply'
-    arguments: '-f "manifest.yaml"'
+    targetPath: $(System.DefaultWorkingDirectory)
+    artifactName: fooImg
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Pipeline.Workspace)'
+    publishLocation: 'pipeline'
+    #artifactName not set -> by default, set to unique ID within job scope
+
+- task: DownloadPipelineArtifact@2
+  inputs:
+    buildType: 'current'
+    itemPattern: '**' # Recursive matching
+    targetPath: '$(Pipeline.Workspace)'
+
+- task: DownloadBuildArtifacts@1
+  inputs:
+    buildType: 'specific'
+    project: 'd7543abd-f5b4-4ef1-8ccf-785ffc43e42c'
+    pipeline: '8'
+    buildVersionToDownload: 'latest'
+    downloadType: 'specific'
+    downloadPath: '$(System.ArtifactsDirectory)'
+
+- task: KubernetesManifest@0
+  inputs:
+    action: 'createSecret'
+    kubernetesServiceConnection: 'my_aks_connection'
+    namespace: 'default'
     secretType: 'dockerRegistry'
-    containerRegistryType: 'Azure Container Registry'
-    namespace: 'nameSpacek8s'
+    secretName: 'foo_secret'
+    dockerRegistryEndpoint: 'docker-jfrog-artifactory'
+
+- task: KubernetesManifest@0
+  inputs:
+    action: 'deploy'
+    kubernetesServiceConnection: 'my_aks_connection'
+    namespace: 'default'
+    manifests: './*yml'
+    
+- task: KubernetesManifest@0
+  inputs:
+    action: 'deploy'
+    kubernetesServiceConnection: 'my_aks_connection'
+    namespace: 'default'
+    manifests: | 
+      ./service.yaml
+    containers: | 
+      foo:test
+    imagePullSecrets: | 
+      foo_secret
+
