@@ -43,6 +43,7 @@ resource "azurerm_lb" "inner_lb" {
   name = "inner_lb"
   location = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+  sku = "Basic"
 
   frontend_ip_configuration {
     name = "img_repo"
