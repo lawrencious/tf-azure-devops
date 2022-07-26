@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool: 
-  vm-image: ubuntu-latest
+  vmImage: ubuntu-latest
 
 stages:
   - stage: Build
@@ -33,7 +33,7 @@ stages:
           displayName: 'Build and push container image'
           inputs:
             containerRegistry: 'jfrog-artifactory'
-            repository: 'default-docker-remote/'
+            repository: 'jfrog-artifactory-repository'
             command: 'buildAndPush'
             dockerfile: '**/Dockerfile'
         
