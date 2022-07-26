@@ -34,8 +34,9 @@ stages:
       # Finally, publish images as artifacts
       - task: PublishPipelineArtifact@1
         inputs:
-          artifactName: 'manifests'
-          path: 'manifests'
+          targetPath: '$(Pipeline.Workspace)'
+          artifact: 'manifests'
+          publishLocation: 'pipeline'
 
   stage: Deploy
     dependsOn: Build
