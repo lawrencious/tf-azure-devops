@@ -128,7 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Logs and others from this very folder
+# Others from this very folder
 .terraform/
 .terraform.lock.hcl
-*.tfplan
+main.tfplan
+main.destroy.tfplan

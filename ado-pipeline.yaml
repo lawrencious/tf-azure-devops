@@ -5,10 +5,10 @@ pool:
   vm-image: ubuntu-latest
 
 stages:
-  - stage: BuildAndPush
+  - stage: Build
     displayName: 'Building and pushing images'
     jobs:
-      - job: BuildAndPush
+      - job: Build
         steps:
         # OPTION 1: using docker-compose, if a docker-compose.yml exists
         - task: DockerCompose@0
@@ -38,7 +38,7 @@ stages:
             dockerfile: '**/Dockerfile'
         
         # publish: shortcut to task PublishPipelineArtifacts@1, to publish file/folder as pipeline artifacts
-        - publish: '$(Build.SourcesDirectory)/path/to/manifests'  # One Git repo -> Build.SourcesDirectory maps to code path
+        - publish: '$(Build.Repository.Name)/path/to/manifests'  
           artifact: 'manifests'
           displayName: 'Publishing manifests'
 
