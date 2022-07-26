@@ -47,7 +47,6 @@ stages:
     jobs:
     - job: Deploy
       steps:
-      
       # download: shortcut to task DownloadPipelineArtifact@2
       # Artifacts from the current pipeline are downloaded to $(Pipeline.Workspace)/manifests
       - download: 'current'

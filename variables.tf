@@ -33,3 +33,9 @@ variable public_key_path {
   default = "~/.ssh/id_rsa.pub"
   sensitive = true
 }
+
+data "azurerm_resources" "aks_nsg_name" {
+  resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group
+
+  type = "Microsoft.Network/networkSecurityGroups"
+}
