@@ -82,48 +82,6 @@ resource "azurerm_network_interface_nat_rule_association" "vm_nat_rule" {
   nat_rule_id = azurerm_lb_nat_rule.vm_nat_rule.id
 }
 
-resource "azurerm_network_security_group" "vm_nsg" {
-  name = "vm_nsg"
-  location = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-
-  security_rule { # accepts HTTPS requests from AKS
-    name = "HTTPS-In"
-    priority = 100
-    direction = "Inbound"
-    access = "Allow"
-    protocol = "Tcp"
-    source_port_range = "*"
-    destination_port_range = "443"
-    source_address_prefixes = [azurerm_lb.inner_lb.private_ip_address]
-    destination_address_prefix = var.vm_subnet
-  }
-
-  security_rule { # answers HTTPS requests from AKS
-    name = "HTTPS-Out"
-    priority = 101
-    direction = "Outbound"
-    access = "Allow"
-    protocol = "Tcp"
-    source_port_range = "443"
-    destination_port_range = "*"
-    source_address_prefix = var.vm_subnet
-    destination_address_prefixes = [azurerm_lb.inner_lb.private_ip_address]
-  }
-
-  security_rule { #trying to access VM
-    name = "SSH"
-    priority = 104
-    direction = "Inbound"
-    access = "Allow"
-    protocol = "Tcp"
-    source_port_range = "*"
-    destination_port_range = "22"
-    source_address_prefix = "*"
-    destination_address_prefix = azurerm_public_ip.vm_ip.ip_address
-  }
-}
-
 resource "azurerm_network_security_rule" "img_req" { # AKS HTTPS requesting img to ImgRepo
   name = "ImgReq"
   priority = 102
@@ -150,11 +108,6 @@ resource "azurerm_network_security_rule" "img_req_acc" { # accepts HTTPS traffic
   destination_address_prefix = var.aks_subnet
   resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group # reference the auto-generated RG containing the resources for this cluster
   network_security_group_name = data.azurerm_resources.aks_nsg_name.resources.0.name
-}
-
-resource "azurerm_network_interface_security_group_association" "vm_ni_nsg_association" {
-  network_interface_id = azurerm_network_interface.vm_ni.id
-  network_security_group_id = azurerm_network_security_group.vm_nsg.id
 }
 
 resource "azurerm_linux_virtual_machine" "vm" {

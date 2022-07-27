@@ -36,43 +36,20 @@ stages:
             repository: 'jfrog-artifactory-repository'
             command: 'buildAndPush'
             dockerfile: '**/Dockerfile'
-        
-        # publish: shortcut to task PublishPipelineArtifacts@1, to publish file/folder as pipeline artifacts
-        - publish: '$(Build.Repository.Name)/path/to/manifests'  
-          artifact: 'manifests'
-          displayName: 'Publishing manifests'
 
   - stage: Deploy
     dependsOn: Build
+    displayName: 'Updating cluster resources'
     jobs:
     - job: Deploy
       steps:
-      # download: shortcut to task DownloadPipelineArtifact@2
-      # Artifacts from the current pipeline are downloaded to $(Pipeline.Workspace)/manifests
-      - download: 'current'
-        artifact: 'manifests'
-        displayName: 'Downloading manifests'
-        # If patterns is absent, all files from the artifact are downloaded
-
-      # Then, creates Secret
-      - task: KubernetesManifest@0
+      # Deploys containers
+      - task: Kubernetes@1
         inputs:
-          action: 'createSecret'
-          kubernetesServiceConnection: 'my_aks_connection'
-          namespace: 'default'
+          connectionType: 'Kubernetes Service Connection'
+          kubernetesServiceEndpoint: 'my_aks_connection'
+          command: 'apply'
+          arguments: '-f ./path/to/manifests/'
           secretType: 'dockerRegistry'
-          secretName: 'my_secret'
-          dockerRegistryEndpoint: 'jfrog-artifactory'
-
-      # Finally, deploys containers
-      - task: KubernetesManifest@0
-        inputs:
-          action: 'deploy'
-          kubernetesServiceConnection: 'my_aks_connection'
-          namespace: 'default'
-          manifests: | 
-            manifests/manifest.yaml
-          containers: |
-            jfrog-artifactory/<imgName>:<tag>
-          imagePullSecrets: | 
-            my_secret
+          containerRegistryType: 'Container Registry'
+          dockerRegistryEndpoint: 'docker-jfrog-artifactory'
