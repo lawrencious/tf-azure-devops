@@ -31,13 +31,6 @@ resource "azurerm_subnet" "inner_lb_subnet" {
   address_prefixes = [var.inner_lb_subnet]
 }
 
-resource "azurerm_public_ip" "vm_ip" {
-  name = "vm_ip"
-  location = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  allocation_method = "Static"
-}
-
 #load balancer between AKS and VM
 resource "azurerm_lb" "inner_lb" {
   name = "inner_lb"
