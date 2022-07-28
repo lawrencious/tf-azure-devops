@@ -5,6 +5,19 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
+  - stage: Configuration
+    jobs:
+    - job: Configuration
+      steps:
+      - task: DockerInstaller@0
+        displayName: Installing Docker
+        inputs:
+          dockerVersion: '17.09.0-ce'
+      - task: KubectlInstaller@0
+        displayName: Installing kubectl 
+        inputs:
+          kubectlVersion: 'latest'
+          
   - stage: Build
     displayName: 'Building and pushing images'
     jobs:
