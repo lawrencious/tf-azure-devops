@@ -32,10 +32,10 @@ stages:
         - task: Docker@2
           displayName: 'Build and push container image'
           inputs:
-            containerRegistry: 'jfrog-artifactory'
-            repository: 'jfrog-artifactory-repository'
+            containerRegistry: 'docker-jfrog-artifactory'
+            repository: 'default-docker/'
             command: 'buildAndPush'
-            dockerfile: '**/Dockerfile'
+            Dockerfile: '**/Dockerfile'
 
   - stage: Deploy
     dependsOn: Build
