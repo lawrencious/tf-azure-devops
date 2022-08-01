@@ -3,7 +3,7 @@ variables:
     command: 'apply'
     arguments: '-f path/to/manifests'
   ${{ else }}:
-    command: 'set'
+    command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] containerName1=containerImg1:$(Build.BuildId) --all'
 
 trigger:
@@ -16,6 +16,7 @@ stages:
   - stage: Configuration
     jobs:
     - job: Configuration
+      displayName: Installing Docker and kubectl on agent
       steps:
       - task: DockerInstaller@0
         displayName: Installing Docker
@@ -56,7 +57,7 @@ stages:
           inputs:
             containerRegistry: 'docker-jfrog-artifactory'
             repository: 'default-docker-remote'
-            command: 'build' #'buildAndPush'
+            command: 'build' #'buildAndPush', push needs to be fixed - throws ##[error] unknown: Not found
             Dockerfile: '**/Dockerfile'
             # tag: $(Build.BuildId) by default - BuildId increased each time
 
