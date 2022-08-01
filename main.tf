@@ -1,41 +1,44 @@
-resource "azurerm_resource_group" "rg" {
-  name = "rg"
-  location = "UK South"
+data "azurerm_resource_group" "rg" {
+  name = "BU-MT"
 }
 
-resource "azurerm_virtual_network" "vn" {
-  name = "vn"
-  resource_group_name = azurerm_resource_group.rg.name
-  address_space = [var.address_space]
-  location = azurerm_resource_group.rg.location
+data "azurerm_virtual_network" "vn" {
+  name = "BU-MT-vnet-TF"
+  resource_group_name = data.azurerm_resource_group.rg.name
+}
+
+data "azurerm_resources" "aks_nsg_name" {
+  resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group
+
+  type = "Microsoft.Network/networkSecurityGroups"
 }
 
 resource "azurerm_subnet" "vm_subnet" {
   name = "vm_subnet"
-  resource_group_name = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vn.name
+  resource_group_name = data.azurerm_resource_group.rg.name
+  virtual_network_name = data.azurerm_virtual_network.vn.name # azurerm_virtual_network.vn.name
   address_prefixes = [var.vm_subnet]
 }
 
 resource "azurerm_subnet" "aks_subnet" {
   name = "aks_subnet"
-  resource_group_name = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vn.name
+  resource_group_name = data.azurerm_resource_group.rg.name
+  virtual_network_name = data.azurerm_virtual_network.vn.name # azurerm_virtual_network.vn.name
   address_prefixes = [var.aks_subnet]
 }
 
 resource "azurerm_subnet" "inner_lb_subnet" {
   name = "inner_lb_subnet"
-  resource_group_name = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vn.name
+  resource_group_name = data.azurerm_resource_group.rg.name
+  virtual_network_name = data.azurerm_virtual_network.vn.name # azurerm_virtual_network.vn.name
   address_prefixes = [var.inner_lb_subnet]
 }
 
 #load balancer between AKS and VM
 resource "azurerm_lb" "inner_lb" {
   name = "inner_lb"
-  location = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
   sku = "Basic"
 
   frontend_ip_configuration {
@@ -47,7 +50,7 @@ resource "azurerm_lb" "inner_lb" {
 }
 
 resource "azurerm_lb_nat_rule" "vm_nat_rule" {
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = data.azurerm_resource_group.rg.name
   loadbalancer_id = azurerm_lb.inner_lb.id
   name = "ImgRepoAccess"
   protocol = "Tcp"
@@ -58,8 +61,8 @@ resource "azurerm_lb_nat_rule" "vm_nat_rule" {
 
 resource "azurerm_network_interface" "vm_ni" {
   name = "vm_ni"
-  location = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
 
   ip_configuration {
     name = "vm_ni_configuration"
@@ -75,38 +78,10 @@ resource "azurerm_network_interface_nat_rule_association" "vm_nat_rule" {
   nat_rule_id = azurerm_lb_nat_rule.vm_nat_rule.id
 }
 
-resource "azurerm_network_security_rule" "img_req" { # AKS HTTPS requesting img to ImgRepo
-  name = "ImgReq"
-  priority = 102
-  direction = "Outbound"
-  access = "Allow"
-  protocol = "Tcp"
-  source_port_range = "*"
-  destination_port_range = "443"
-  source_address_prefix = var.aks_subnet
-  destination_address_prefixes = [azurerm_lb.inner_lb.private_ip_address]
-  resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group # reference the auto-generated RG containing the resources for this cluster
-  network_security_group_name = data.azurerm_resources.aks_nsg_name.resources.0.name
-}
-
-resource "azurerm_network_security_rule" "img_req_acc" { # accepts HTTPS traffic from ImgRepo to AKS
-  name = "ImgReqAccept"
-  priority = 103
-  direction = "Inbound"
-  access = "Allow"
-  protocol = "Tcp"
-  source_port_range = "443"
-  destination_port_range = "*"
-  source_address_prefixes = [azurerm_lb.inner_lb.private_ip_address]
-  destination_address_prefix = var.aks_subnet
-  resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group # reference the auto-generated RG containing the resources for this cluster
-  network_security_group_name = data.azurerm_resources.aks_nsg_name.resources.0.name
-}
-
 resource "azurerm_linux_virtual_machine" "vm" {
   name = "ImgRepo"
-  resource_group_name = azurerm_resource_group.rg.name
-  location = azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location = data.azurerm_resource_group.rg.location
   size = "Standard_B1s"
   admin_username = "lorenzo"
   network_interface_ids = [azurerm_network_interface.vm_ni.id]
@@ -131,8 +106,8 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
 resource "azurerm_kubernetes_cluster" "aks" {
   name = "aks"
-  location = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
   dns_prefix = "aks-prefix"
 
   default_node_pool {
@@ -148,5 +123,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   network_profile {
     network_plugin = "azure"
+    service_cidr = var.service_cidr # if not specified, defaults to 10.0.0.0/16 => leads to CIDR overlapping
+    dns_service_ip = var.dns_service_ip
+    docker_bridge_cidr = var.docker_bridge_cidr
   }
 }
