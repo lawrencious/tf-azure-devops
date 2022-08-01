@@ -51,6 +51,7 @@ stages:
           displayName: 'Build and push container image'
           inputs:
             containerRegistry: 'docker-jfrog-artifactory'
+            repository: 'default-docker-remote'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
 
