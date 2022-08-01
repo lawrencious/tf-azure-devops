@@ -7,12 +7,6 @@ data "azurerm_virtual_network" "vn" {
   resource_group_name = data.azurerm_resource_group.rg.name
 }
 
-data "azurerm_resources" "aks_nsg_name" {
-  resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group
-
-  type = "Microsoft.Network/networkSecurityGroups"
-}
-
 resource "azurerm_subnet" "vm_subnet" {
   name = "vm_subnet"
   resource_group_name = data.azurerm_resource_group.rg.name
