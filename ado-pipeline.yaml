@@ -47,12 +47,6 @@ stages:
         #    action: 'Push services'
 
         # OPTION 2: multiple Docker tasks, a buildAndPush for each image to build and push
-        - task: ArtifactoryDocker@1
-          inputs:
-            command: 'pull'
-            artifactoryService: 'my-jfrog-artifactory-repo'
-            sourceRepo: 'default-docker/'
-            imageName: 'hello'
         
         - task: Docker@2
           inputs:
@@ -60,14 +54,12 @@ stages:
             repository: 'default-docker'
             command: 'build'
             Dockerfile: '**/Dockerfile'
-            arguments: 'build-arg BASEIMAGE="hello"'
         
-        - task: ArtifactoryDocker@1
+        - task: Docker@2
           inputs:
+            containerRegistry: 'docker-jfrog-artifactory'
+            repository: 'default-docker'
             command: 'push'
-            artifactoryService: 'my-jfrog-artifactory-repo'
-            targetRepo: 'default-docker'
-            imageName: "hello:'$(Build.BuildId)'"
 
   - stage: Deploy
     dependsOn: Build
