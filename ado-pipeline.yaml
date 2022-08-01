@@ -1,7 +1,14 @@
 variables:
-  firstDeploy: 'true'
-  command: 'apply'
-  arguments: '/path/to/manifest.yml'
+  - name: command
+    ${{ if eq($(Build.BuildId), 0) }}:
+      value: 'apply'
+    ${{ if ne($(Build.BuildId), 0) }}:
+      value: 'rollout restart'
+  - name: arguments
+    ${{ if eq($(Build.BuildId), 0) }}:
+      value: '-f path/to/manifests'
+    ${{ if ne($(Build.BuildId), 0) }}:
+      value: 'RESOURCE'
 
 trigger:
 - main
@@ -64,8 +71,7 @@ stages:
     - job: Deploy
       steps:
       - script:
-          if [ $(Build.BuildId) == 0 ]
-          then
+          
             echo "##vso[task.setvariable variable=firstDeploy;]false"
             echo "Set firstDeploy to $(firstDeploy)"
           else 
@@ -77,8 +83,8 @@ stages:
         inputs:
           connectionType: 'Kubernetes Service Connection'
           kubernetesServiceEndpoint: 'my_aks_connection'
-          command: 'apply'
-          arguments: '-f ./path/to/manifests/'
+          command: $(command)
+          arguments: $(arguments)
           secretType: 'dockerRegistry'
           containerRegistryType: 'Container Registry'
           dockerRegistryEndpoint: 'docker-jfrog-artifactory'
