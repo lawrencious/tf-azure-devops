@@ -51,15 +51,9 @@ stages:
         - task: Docker@2
           inputs:
             containerRegistry: 'docker-jfrog-artifactory'
-            repository: 'default-docker'
-            command: 'build'
+            repository: 'default-docker-remote'
+            command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
-        
-        - task: Docker@2
-          inputs:
-            containerRegistry: 'docker-jfrog-artifactory'
-            repository: 'default-docker'
-            command: 'push'
 
   - stage: Deploy
     dependsOn: Build
