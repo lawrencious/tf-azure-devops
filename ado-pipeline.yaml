@@ -1,13 +1,13 @@
 variables:
   - name: command
-    ${{ if eq($(Build.BuildId), 0) }}:
+    ${{ if eq(variables[Build.BuildId], 0) }}:
       value: 'apply'
-    ${{ if ne($(Build.BuildId), 0) }}:
+    ${{ if ne(variables[Build.BuildId], 0) }}:
       value: 'rollout restart'
   - name: arguments
-    ${{ if eq($(Build.BuildId), 0) }}:
+    ${{ if eq(variables[Build.BuildId], 0) }}:
       value: '-f path/to/manifests'
-    ${{ if ne($(Build.BuildId), 0) }}:
+    ${{ if ne(variables[Build.BuildId], 0) }}:
       value: 'RESOURCE'
 
 trigger:
