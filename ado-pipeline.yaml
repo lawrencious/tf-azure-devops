@@ -64,7 +64,8 @@ stages:
     - job: Deploy
       steps:
       - script:
-          if [$firstDeploy]
+          echo "BABABUI"
+          if [ $firstDeploy ]
           then
             echo "##vso[task.setvariable variable=firstDeploy;]false"
             echo "Set firstDeploy to ${firstDeploy}"
