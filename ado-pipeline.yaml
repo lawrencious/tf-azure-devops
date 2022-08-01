@@ -22,33 +22,6 @@ stages:
         displayName: Installing kubectl 
         inputs:
           kubectlVersion: 'latest'
-      
-      - task: ArtifactoryToolsInstaller@1
-        inputs:
-          artifactoryService: 'my-jfrog-artifactory-repo'
-          cliInstallationRepo: 'cli'
-      
-      - task: ArtifactoryDocker@1
-        inputs:
-          command: 'pull'
-          artifactoryService: 'my-jfrog-artifactory-repo'
-          sourceRepo: 'default-docker'
-          imageName: 'hello'
-      
-      - task: Docker@2
-        inputs:
-          containerRegistry: 'docker-jfrog-artifactory'
-          repository: 'default-docker'
-          command: 'build'
-          Dockerfile: '**/Dockerfile'
-          arguments: 'build-arg BASEIMAGE="hello"'
-      
-      - task: ArtifactoryDocker@1
-        inputs:
-          command: 'push'
-          artifactoryService: 'my-jfrog-artifactory-repo'
-          targetRepo: 'default-docker'
-          imageName: 'test-hello:$(Build.BuildId)'
           
   - stage: Build
     displayName: 'Building and pushing images'
@@ -74,20 +47,27 @@ stages:
         #    action: 'Push services'
 
         # OPTION 2: multiple Docker tasks, a buildAndPush for each image to build and push
+        - task: ArtifactoryDocker@1
+          inputs:
+            command: 'pull'
+            artifactoryService: 'my-jfrog-artifactory-repo'
+            sourceRepo: 'default-docker'
+            imageName: 'hello'
+        
         - task: Docker@2
-          displayName: 'Build and push container image'
           inputs:
             containerRegistry: 'docker-jfrog-artifactory'
             repository: 'default-docker'
             command: 'build'
             Dockerfile: '**/Dockerfile'
+            arguments: 'build-arg BASEIMAGE="hello"'
         
         - task: ArtifactoryDocker@1
           inputs:
             command: 'push'
             artifactoryService: 'my-jfrog-artifactory-repo'
             targetRepo: 'default-docker'
-            imageName: 'hello'
+            imageName: 'test-hello:$(Build.BuildId)'
 
   - stage: Deploy
     dependsOn: Build
