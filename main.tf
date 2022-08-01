@@ -16,21 +16,21 @@ data "azurerm_resources" "aks_nsg_name" {
 resource "azurerm_subnet" "vm_subnet" {
   name = "vm_subnet"
   resource_group_name = data.azurerm_resource_group.rg.name
-  virtual_network_name = data.azurerm_virtual_network.vn.name # azurerm_virtual_network.vn.name
+  virtual_network_name = data.azurerm_virtual_network.vn.name
   address_prefixes = [var.vm_subnet]
 }
 
 resource "azurerm_subnet" "aks_subnet" {
   name = "aks_subnet"
   resource_group_name = data.azurerm_resource_group.rg.name
-  virtual_network_name = data.azurerm_virtual_network.vn.name # azurerm_virtual_network.vn.name
+  virtual_network_name = data.azurerm_virtual_network.vn.name
   address_prefixes = [var.aks_subnet]
 }
 
 resource "azurerm_subnet" "inner_lb_subnet" {
   name = "inner_lb_subnet"
   resource_group_name = data.azurerm_resource_group.rg.name
-  virtual_network_name = data.azurerm_virtual_network.vn.name # azurerm_virtual_network.vn.name
+  virtual_network_name = data.azurerm_virtual_network.vn.name
   address_prefixes = [var.inner_lb_subnet]
 }
 

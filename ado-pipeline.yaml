@@ -54,6 +54,7 @@ stages:
             repository: 'default-docker'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
+            # tag: $(Build.BuildId) by default, BuildId increased each time
 
   - stage: Deploy
     dependsOn: Build
