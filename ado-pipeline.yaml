@@ -4,7 +4,7 @@ variables:
     arguments: '-f path/to/manifests'
   ${{ else }}:
     command: 'set'
-    arguments: 'image [TYPES] containerName1=containerImg1 --all'
+    arguments: 'image [TYPES] containerName1=containerImg1:$(Build.BuildId) --all'
 
 trigger:
 - main
@@ -76,3 +76,6 @@ stages:
           secretType: 'dockerRegistry'
           containerRegistryType: 'Container Registry'
           dockerRegistryEndpoint: 'docker-jfrog-artifactory'
+      
+      - script:
+          echo $(arguments)
