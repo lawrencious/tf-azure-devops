@@ -67,7 +67,7 @@ stages:
             command: 'push'
             artifactoryService: 'my-jfrog-artifactory-repo'
             targetRepo: 'default-docker'
-            imageName: 'test-hello:$(Build.BuildId)'
+            imageName: "hello:'$(Build.BuildId)'"
 
   - stage: Deploy
     dependsOn: Build
