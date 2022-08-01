@@ -4,7 +4,7 @@ variables:
     arguments: '-f path/to/manifests'
   ${{ else }}:
     command: 'set'
-    arguments: 'image -f [TYPES] containerName1=containerImg1 --all'
+    arguments: 'image [TYPES] containerName1=containerImg1 --all'
 
 trigger:
 - main
