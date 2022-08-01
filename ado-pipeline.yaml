@@ -3,8 +3,8 @@ variables:
     command: 'apply'
     arguments: '-f path/to/manifests'
   ${{ else }}:
-    command: 'rollout restart'
-    arguments: 'RESOURCE'
+    command: 'set image'
+    arguments: '-f [TYPES] containerName1=containerImg1 --all'
 
 trigger:
 - main
