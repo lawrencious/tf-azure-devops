@@ -1,14 +1,10 @@
 variables:
-  - name: command
-    ${{ if eq(variables[Build.BuildId], 0) }}:
-      value: 'apply'
-    ${{ if ne(variables[Build.BuildId], 0) }}:
-      value: 'rollout restart'
-  - name: arguments
-    ${{ if eq(variables[Build.BuildId], 0) }}:
-      value: '-f path/to/manifests'
-    ${{ if ne(variables[Build.BuildId], 0) }}:
-      value: 'RESOURCE'
+  ${{ if eq( variables['Build.BuildId'], 0 ) }}:
+    command: 'apply'
+    arguments: '-f path/to/manifests'
+  ${{ else }}:
+    command: 'rollout restart'
+    arguments: 'RESOURCE'
 
 trigger:
 - main
@@ -62,7 +58,7 @@ stages:
             repository: 'default-docker-remote'
             command: 'build' #'buildAndPush'
             Dockerfile: '**/Dockerfile'
-            # tag: $(Build.BuildId) by default, BuildId increased each time
+            # tag: $(Build.BuildId) by default - BuildId increased each time
 
   - stage: Deploy
     dependsOn: Build
@@ -70,14 +66,6 @@ stages:
     jobs:
     - job: Deploy
       steps:
-      - script:
-          
-            echo "##vso[task.setvariable variable=firstDeploy;]false"
-            echo "Set firstDeploy to $(firstDeploy)"
-          else 
-            echo "##vso[task.setvariable variable=command;]'set'"
-            echo "##vso[task.setvariable variable=arguments;]'image RESOURCE CONTAINERS=IMGNAME:TAG'"
-          fi
       # Deploys containers
       - task: Kubernetes@1
         inputs:
