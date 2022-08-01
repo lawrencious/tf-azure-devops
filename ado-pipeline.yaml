@@ -51,7 +51,7 @@ stages:
           inputs:
             command: 'pull'
             artifactoryService: 'my-jfrog-artifactory-repo'
-            sourceRepo: 'default-docker'
+            sourceRepo: 'default-docker/'
             imageName: 'hello'
         
         - task: Docker@2
