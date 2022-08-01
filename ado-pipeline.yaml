@@ -51,9 +51,16 @@ stages:
           displayName: 'Build and push container image'
           inputs:
             containerRegistry: 'docker-jfrog-artifactory'
-            repository: 'default-docker-remote'
-            command: 'buildAndPush'
+            repository: 'default-docker'
+            command: 'build'
             Dockerfile: '**/Dockerfile'
+        
+        - task: ArtifactoryDocker@1
+          inputs:
+            command: 'push'
+            artifactoryService: 'my-jfrog-artifactory-repo'
+            targetRepo: 'default-docker'
+            imageName: 'hello'
 
   - stage: Deploy
     dependsOn: Build
