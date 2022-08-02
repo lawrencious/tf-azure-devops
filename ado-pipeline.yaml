@@ -72,7 +72,7 @@ stages:
       - task: Kubernetes@1
         inputs:
           connectionType: 'Kubernetes Service Connection'
-          kubernetesServiceEndpoint: 'my_aks_connection'
+          kubernetesServiceEndpoint: 'aksBUMTConnection'
           command: '$(command)'
           arguments: '$(arguments)'
           secretType: 'dockerRegistry'
