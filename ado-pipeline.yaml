@@ -56,7 +56,7 @@ stages:
           displayName: 'Building and pushing to JFrog'
           inputs:
             containerRegistry: 'docker-jfrog-artifactory'
-            repository: 'default-docker-remote'
+            repository: 'default-docker'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
             # tag: $(Build.BuildId) by default - BuildId increased each time
