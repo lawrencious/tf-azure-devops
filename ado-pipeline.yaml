@@ -56,9 +56,8 @@ stages:
           displayName: 'Building and pushing to JFrog'
           inputs:
             containerRegistry: 'docker-jfrog-artifactory'
-            repository: 'default-docker-remote'
-            #command: 'build'
-            command: 'buildAndPush' #'buildAndPush', push needs to be fixed - throws ##[error] unknown: Not found
+            repository: 'artifactory/default-docker-remote'
+            command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
             # tag: $(Build.BuildId) by default - BuildId increased each time
 
