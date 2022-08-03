@@ -1,3 +1,7 @@
+variable prefix {
+  default = "tf-ado"
+}
+
 # Address space in use is BU-MT-vnet-TF
 # Subnets
 variable vm_subnet {
