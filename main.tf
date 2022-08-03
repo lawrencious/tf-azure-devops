@@ -8,21 +8,21 @@ data "azurerm_virtual_network" "vn" {
 }
 
 resource "azurerm_subnet" "vm_subnet" {
-  name = "vm_subnet"
+  name = "${var.prefix}-vm-subnet"
   resource_group_name = data.azurerm_resource_group.rg.name
   virtual_network_name = data.azurerm_virtual_network.vn.name
   address_prefixes = [var.vm_subnet]
 }
 
 resource "azurerm_subnet" "aks_subnet" {
-  name = "aks_subnet"
+  name = "${var.prefix}-aks-subnet"
   resource_group_name = data.azurerm_resource_group.rg.name
   virtual_network_name = data.azurerm_virtual_network.vn.name
   address_prefixes = [var.aks_subnet]
 }
 
 resource "azurerm_subnet" "inner_lb_subnet" {
-  name = "inner_lb_subnet"
+  name = "${var.prefix}-inner-lb-subnet"
   resource_group_name = data.azurerm_resource_group.rg.name
   virtual_network_name = data.azurerm_virtual_network.vn.name
   address_prefixes = [var.inner_lb_subnet]
@@ -30,7 +30,7 @@ resource "azurerm_subnet" "inner_lb_subnet" {
 
 #load balancer between AKS and VM
 resource "azurerm_lb" "inner_lb" {
-  name = "inner_lb"
+  name = "${var.prefix}-inner-lb"
   location = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   sku = "Basic"
@@ -54,7 +54,7 @@ resource "azurerm_lb_nat_rule" "vm_nat_rule" {
 }
 
 resource "azurerm_network_interface" "vm_ni" {
-  name = "vm_ni"
+  name = "${var.prefix}-vm_ni"
   location = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
 
@@ -73,7 +73,7 @@ resource "azurerm_network_interface_nat_rule_association" "vm_nat_rule" {
 }
 
 resource "azurerm_linux_virtual_machine" "vm" {
-  name = "ImgRepo"
+  name = "${var.prefix}-ImgRepo"
   resource_group_name = data.azurerm_resource_group.rg.name
   location = data.azurerm_resource_group.rg.location
   size = "Standard_B1s"
@@ -99,7 +99,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {
-  name = "aks"
+  name = "${var.prefix}-aks"
   location = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   dns_prefix = "aks-prefix"

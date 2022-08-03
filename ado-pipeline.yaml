@@ -4,7 +4,7 @@ variables:
     arguments: '-f path/to/manifests'
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
-    arguments: 'image [TYPES] containerName1=containerImg1:$(Build.BuildId) --all'
+    arguments: 'image [TYPES] containerName=containerImg:$(Build.BuildId) --all'
 
 trigger:
 - main
