@@ -89,7 +89,7 @@ resource "azurerm_network_security_rule" "ssh-nsg" {
   source_port_range = "*"
   destination_port_range = "22"
   source_address_prefix = "*"
-  destination_address_prefix = var.vm_subnet
+  destination_address_prefix = "*"
 }
 
 resource "azurerm_subnet_network_security_group_association" "vm_subnet_nsg" {
