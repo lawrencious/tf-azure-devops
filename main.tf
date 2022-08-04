@@ -53,6 +53,13 @@ resource "azurerm_lb_nat_rule" "vm_nat_rule" {
   frontend_ip_configuration_name = "img_repo"
 }
 
+resource "azurerm_public_ip" "vm-pub-ip" {
+  name = "${var.prefix}-vm-ip"
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location = data.azurerm_resource_group.rg.location
+  allocation_method = "Static"
+}
+
 resource "azurerm_network_interface" "vm_ni" {
   name = "${var.prefix}-vm-ni"
   location = data.azurerm_resource_group.rg.location
@@ -63,6 +70,7 @@ resource "azurerm_network_interface" "vm_ni" {
     subnet_id = azurerm_subnet.vm_subnet.id
     private_ip_address_allocation = "Static"
     private_ip_address = var.private_ip_vm_ni
+    public_ip_address_id = azurerm_public_ip.vm-pub-ip.id
   }
 }
 
@@ -88,7 +96,7 @@ resource "azurerm_network_security_rule" "ssh-nsg" {
   protocol = "Tcp"
   source_port_range = "*"
   destination_port_range = "22"
-  source_address_prefix = var.vm_subnet
+  source_address_prefix = azurerm_public_ip.vm-pub-ip.ip_address
   destination_address_prefix = "*"
 }
 
