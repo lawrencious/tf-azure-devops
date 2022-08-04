@@ -56,7 +56,7 @@ stages:
         - task: Docker@2
           displayName: 'Building and pushing to JFrog'
           inputs:
-            containerRegistry: 'docker-jfrog-artifactory'
+            containerRegistry: 'jfrog-img-repo'
             repository: 'default-docker'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
@@ -72,9 +72,9 @@ stages:
       - task: Kubernetes@1
         inputs:
           connectionType: 'Kubernetes Service Connection'
-          kubernetesServiceEndpoint: 'my_aks_connection'
-          command: $(command)
-          arguments: $(arguments)
+          kubernetesServiceEndpoint: 'aksBUMTConnection'
+          command: '$(command)'
+          arguments: '$(arguments)'
           secretType: 'dockerRegistry'
           containerRegistryType: 'Container Registry'
-          dockerRegistryEndpoint: 'docker-jfrog-artifactory'
+          dockerRegistryEndpoint: 'jfrog-img-repo'

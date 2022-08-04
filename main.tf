@@ -54,7 +54,7 @@ resource "azurerm_lb_nat_rule" "vm_nat_rule" {
 }
 
 resource "azurerm_network_interface" "vm_ni" {
-  name = "${var.prefix}-vm_ni"
+  name = "${var.prefix}-vm-ni"
   location = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
 
@@ -70,6 +70,31 @@ resource "azurerm_network_interface_nat_rule_association" "vm_nat_rule" {
   network_interface_id = azurerm_network_interface.vm_ni.id
   ip_configuration_name = azurerm_network_interface.vm_ni.ip_configuration[0].name
   nat_rule_id = azurerm_lb_nat_rule.vm_nat_rule.id
+}
+
+resource "azurerm_network_security_group" "nsg" {
+  name = "${var.prefix}-vm-nsg"
+  location = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+}
+
+resource "azurerm_network_security_rule" "ssh-nsg" {
+  resource_group_name = data.azurerm_resource_group.rg.name
+  network_security_group_name = azurerm_network_security_group.nsg.name
+  name = "SSH"
+  priority = 100
+  access = "Allow"
+  direction = "Inbound"
+  protocol = "Tcp"
+  source_port_range = "*"
+  destination_port_range = "22"
+  source_address_prefix = var.vm_subnet
+  destination_address_prefix = "*"
+}
+
+resource "azurerm_subnet_network_security_group_association" "vm_subnet_nsg" {
+  subnet_id = azurerm_subnet.vm_subnet.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
 resource "azurerm_linux_virtual_machine" "vm" {
