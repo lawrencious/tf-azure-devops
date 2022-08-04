@@ -96,7 +96,7 @@ resource "azurerm_network_security_rule" "ssh-nsg" {
   protocol = "Tcp"
   source_port_range = "*"
   destination_port_range = "22"
-  source_address_prefix = azurerm_public_ip.vm-pub-ip.ip_address
+  source_address_prefix = "*"
   destination_address_prefix = "*"
 }
 
