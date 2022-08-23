@@ -84,9 +84,119 @@ resource "azurerm_network_security_group" "nsg" {
   name = "${var.prefix}-vm-nsg"
   location = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
+
+  security_rule = [ 
+    {
+      name = "SSH"
+      priority = 100
+      access = "Allow"
+      direction = "Inbound"
+      protocol = "Tcp"
+      source_port_range = "*"
+      destination_port_range = "22"
+      source_address_prefix = "*"
+      destination_address_prefix = "*"
+      description = ""
+      destination_address_prefixes = []
+      destination_application_security_group_ids = []
+      destination_port_ranges = []
+      source_address_prefixes = []
+      source_application_security_group_ids = []
+      source_port_ranges = []
+    }, 
+    {
+    name = "Port8082"
+    priority = 110
+    access = "Allow"
+    direction = "Inbound"
+    protocol = "Tcp"
+    source_port_range = "*"
+    destination_port_range = "8082"
+    source_address_prefix = "*"
+    destination_address_prefix = "52.166.57.100"
+    description = ""
+    destination_address_prefixes = []
+    destination_application_security_group_ids = []
+    destination_port_ranges = []
+    source_address_prefixes = []
+    source_application_security_group_ids = []
+    source_port_ranges = []
+  },
+  {
+    name = "HTTPIn"
+    priority = 120
+    access = "Allow"
+    direction = "Inbound"
+    protocol = "Tcp"
+    source_port_range = "*"
+    destination_port_range = "80"
+    source_address_prefix = "*"
+    destination_address_prefix = "52.166.57.100"
+    description = ""
+    destination_address_prefixes = []
+    destination_application_security_group_ids = []
+    destination_port_ranges = []
+    source_address_prefixes = []
+    source_application_security_group_ids = []
+    source_port_ranges = []
+  }, 
+  {
+    name = "HTTPOut"
+    priority = 120
+    access = "Allow"
+    direction = "Outbound"
+    protocol = "Tcp"
+    source_port_range = "80"
+    destination_port_range = "*"
+    source_address_prefix = "52.166.57.100"
+    destination_address_prefix = "*"
+    description = ""
+    destination_address_prefixes = []
+    destination_application_security_group_ids = []
+    destination_port_ranges = []
+    source_address_prefixes = []
+    source_application_security_group_ids = []
+    source_port_ranges = []
+  }, 
+  {
+    name = "HTTPSIn"
+    priority = 130
+    access = "Allow"
+    direction = "Inbound"
+    protocol = "Tcp"
+    source_port_range = "*"
+    destination_port_range = "443"
+    source_address_prefix = "*"
+    destination_address_prefix = "52.166.57.100"
+    description = ""
+    destination_address_prefixes = []
+    destination_application_security_group_ids = []
+    destination_port_ranges = []
+    source_address_prefixes = []
+    source_application_security_group_ids = []
+    source_port_ranges = []
+  }, 
+  {
+    name = "HTTPSOut"
+    priority = 130
+    access = "Allow"
+    direction = "Outbound"
+    protocol = "Tcp"
+    source_port_range = "443"
+    destination_port_range = "*"
+    source_address_prefix = "52.166.57.100"
+    destination_address_prefix = "*"
+    description = ""
+    destination_address_prefixes = []
+    destination_application_security_group_ids = []
+    destination_port_ranges = []
+    source_address_prefixes = []
+    source_application_security_group_ids = []
+    source_port_ranges = []
+  } ]
 }
 
-resource "azurerm_network_security_rule" "ssh-nsg" {
+/*resource "azurerm_network_security_rule" "ssh-nsg" {
   resource_group_name = data.azurerm_resource_group.rg.name
   network_security_group_name = azurerm_network_security_group.nsg.name
   name = "SSH"
@@ -104,7 +214,7 @@ resource "azurerm_subnet_network_security_group_association" "vm_subnet_nsg" {
   subnet_id = azurerm_subnet.vm_subnet.id
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
-
+*/
 resource "azurerm_linux_virtual_machine" "vm" {
   name = "${var.prefix}-ImgRepo"
   resource_group_name = data.azurerm_resource_group.rg.name
