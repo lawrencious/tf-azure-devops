@@ -53,7 +53,7 @@ resource "azurerm_lb_nat_rule" "vm_nat_rule" {
   frontend_ip_configuration_name = "img_repo"
 }
 
-resource "azurerm_public_ip" "vm-pub-ip" {
+resource "azurerm_public_ip" "vm_pub_ip" {
   name = "${var.prefix}-vm-ip"
   resource_group_name = data.azurerm_resource_group.rg.name
   location = data.azurerm_resource_group.rg.location
@@ -70,7 +70,7 @@ resource "azurerm_network_interface" "vm_ni" {
     subnet_id = azurerm_subnet.vm_subnet.id
     private_ip_address_allocation = "Static"
     private_ip_address = var.private_ip_vm_ni
-    public_ip_address_id = azurerm_public_ip.vm-pub-ip.id
+    public_ip_address_id = azurerm_public_ip.vm_pub_ip.id
   }
 }
 
@@ -113,7 +113,7 @@ resource "azurerm_network_security_group" "nsg" {
     source_port_range = "*"
     destination_port_range = "8082"
     source_address_prefix = "*"
-    destination_address_prefix = "52.166.57.100"
+    destination_address_prefix = vm_pub_ip.ip_address
     description = ""
     destination_address_prefixes = []
     destination_application_security_group_ids = []
@@ -131,7 +131,7 @@ resource "azurerm_network_security_group" "nsg" {
     source_port_range = "*"
     destination_port_range = "80"
     source_address_prefix = "*"
-    destination_address_prefix = "52.166.57.100"
+    destination_address_prefix = vm_pub_ip.ip_address
     description = ""
     destination_address_prefixes = []
     destination_application_security_group_ids = []
@@ -148,7 +148,7 @@ resource "azurerm_network_security_group" "nsg" {
     protocol = "Tcp"
     source_port_range = "80"
     destination_port_range = "*"
-    source_address_prefix = "52.166.57.100"
+    source_address_prefix = vm_pub_ip.ip_address
     destination_address_prefix = "*"
     description = ""
     destination_address_prefixes = []
@@ -167,7 +167,7 @@ resource "azurerm_network_security_group" "nsg" {
     source_port_range = "*"
     destination_port_range = "443"
     source_address_prefix = "*"
-    destination_address_prefix = "52.166.57.100"
+    destination_address_prefix = vm_pub_ip.ip_address
     description = ""
     destination_address_prefixes = []
     destination_application_security_group_ids = []
@@ -184,7 +184,7 @@ resource "azurerm_network_security_group" "nsg" {
     protocol = "Tcp"
     source_port_range = "443"
     destination_port_range = "*"
-    source_address_prefix = "52.166.57.100"
+    source_address_prefix = vm_pub_ip.ip_address
     destination_address_prefix = "*"
     description = ""
     destination_address_prefixes = []
@@ -231,6 +231,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   os_disk {
     caching = "ReadWrite"
     storage_account_type = "Standard_LRS"
+    disk_size_gb = 4  # Minimum requirement specified by JFrog official website to host Artifactory
   }
 
   source_image_reference {
