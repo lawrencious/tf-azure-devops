@@ -113,7 +113,7 @@ resource "azurerm_network_security_group" "nsg" {
     source_port_range = "*"
     destination_port_range = "8082"
     source_address_prefix = "*"
-    destination_address_prefix = vm_pub_ip.ip_address
+    destination_address_prefix = azurerm_public_ip.vm_pub_ip.ip_address
     description = ""
     destination_address_prefixes = []
     destination_application_security_group_ids = []
@@ -131,7 +131,7 @@ resource "azurerm_network_security_group" "nsg" {
     source_port_range = "*"
     destination_port_range = "80"
     source_address_prefix = "*"
-    destination_address_prefix = vm_pub_ip.ip_address
+    destination_address_prefix = azurerm_public_ip.vm_pub_ip.ip_address
     description = ""
     destination_address_prefixes = []
     destination_application_security_group_ids = []
@@ -148,7 +148,7 @@ resource "azurerm_network_security_group" "nsg" {
     protocol = "Tcp"
     source_port_range = "80"
     destination_port_range = "*"
-    source_address_prefix = vm_pub_ip.ip_address
+    source_address_prefix = azurerm_public_ip.vm_pub_ip.ip_address
     destination_address_prefix = "*"
     description = ""
     destination_address_prefixes = []
@@ -167,7 +167,7 @@ resource "azurerm_network_security_group" "nsg" {
     source_port_range = "*"
     destination_port_range = "443"
     source_address_prefix = "*"
-    destination_address_prefix = vm_pub_ip.ip_address
+    destination_address_prefix = azurerm_public_ip.vm_pub_ip.ip_address
     description = ""
     destination_address_prefixes = []
     destination_application_security_group_ids = []
@@ -184,7 +184,7 @@ resource "azurerm_network_security_group" "nsg" {
     protocol = "Tcp"
     source_port_range = "443"
     destination_port_range = "*"
-    source_address_prefix = vm_pub_ip.ip_address
+    source_address_prefix = azurerm_public_ip.vm_pub_ip.ip_address
     destination_address_prefix = "*"
     description = ""
     destination_address_prefixes = []
@@ -196,30 +196,11 @@ resource "azurerm_network_security_group" "nsg" {
   } ]
 }
 
-/*resource "azurerm_network_security_rule" "ssh-nsg" {
-  resource_group_name = data.azurerm_resource_group.rg.name
-  network_security_group_name = azurerm_network_security_group.nsg.name
-  name = "SSH"
-  priority = 100
-  access = "Allow"
-  direction = "Inbound"
-  protocol = "Tcp"
-  source_port_range = "*"
-  destination_port_range = "22"
-  source_address_prefix = "*"
-  destination_address_prefix = "*"
-}
-
-resource "azurerm_subnet_network_security_group_association" "vm_subnet_nsg" {
-  subnet_id = azurerm_subnet.vm_subnet.id
-  network_security_group_id = azurerm_network_security_group.nsg.id
-}
-*/
 resource "azurerm_linux_virtual_machine" "vm" {
   name = "${var.prefix}-ImgRepo"
   resource_group_name = data.azurerm_resource_group.rg.name
   location = data.azurerm_resource_group.rg.location
-  size = "Standard_B1s"
+  size = "Standard_B2s"
   admin_username = "lorenzo"
   network_interface_ids = [azurerm_network_interface.vm_ni.id]
 
@@ -231,13 +212,12 @@ resource "azurerm_linux_virtual_machine" "vm" {
   os_disk {
     caching = "ReadWrite"
     storage_account_type = "Standard_LRS"
-    disk_size_gb = 4  # Minimum requirement specified by JFrog official website to host Artifactory
   }
 
   source_image_reference {
     publisher = "Canonical"
     offer = "UbuntuServer"
-    sku = "16.04-LTS"
+    sku = "18.04-LTS"
     version = "latest"
   }
 }
