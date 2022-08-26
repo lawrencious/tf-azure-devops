@@ -52,13 +52,21 @@ stages:
 
         # OPTION 2: multiple Docker tasks, a buildAndPush for each image to build and push
         
-        - task: Docker@2
-          displayName: 'Building and pushing to JFrog'
-          inputs:
-            containerRegistry: 'tf-ado-artifactory-repo-connection'
-            command: 'buildAndPush'
-            Dockerfile: '**/Dockerfile'
+        #- task: Docker@2
+        #  displayName: 'Building and pushing to JFrog'
+        #  inputs:
+        #    containerRegistry: 'tf-ado-artifactory-repo-connection'
+        #    repository: 'tf-ado-repository'
+        #    command: 'buildAndPush'
+        #    Dockerfile: '**/Dockerfile'
             # tag: $(Build.BuildId) by default - BuildId increased each time
+          
+        - task: ArtifactoryDocker@1
+          inputs:
+            command: 'push'
+            artifactoryService: 'tf-ado-artifactory-connection'
+            targetRepo: 'tf-ado-repository'
+            imageName: 'hello:$(Build.BuildId)'
 
   - stage: Deploy
     dependsOn: Build
