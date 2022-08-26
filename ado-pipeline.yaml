@@ -55,7 +55,7 @@ stages:
         - task: Docker@2
           displayName: 'Building and pushing to JFrog'
           inputs:
-            containerRegistry: 'tf-ado-artifactory-repo-connection'
+            containerRegistry: 'tf-ado-artifactory-connection'
             repository: 'tf-ado-repository'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
