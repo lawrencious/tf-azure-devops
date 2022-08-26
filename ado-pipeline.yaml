@@ -56,7 +56,7 @@ stages:
             command: 'push'
             artifactoryService: 'tf-ado-artifactory-connection'
             targetRepo: 'tf-ado-repository'
-            imageName: '$(imageBaseName)/test-hello:$(Build.BuildId)'
+            imageName: '$(imgBaseName)/test-hello:$(Build.BuildId)'
         
 
         # OPTION 1: using docker-compose, if a docker-compose.yml exists
