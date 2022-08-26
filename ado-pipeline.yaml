@@ -50,7 +50,6 @@ stages:
             repository: 'tf-ado-repository/test-hello'
             command: 'build'
             Dockerfile: '**/Dockerfile'
-            arguments: 'build-arg BASEIMAGE=$(imgBaseName)/hello'
         
         - task: ArtifactoryDocker@1
           inputs:
