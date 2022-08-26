@@ -55,8 +55,7 @@ stages:
         - task: Docker@2
           displayName: 'Building and pushing to JFrog'
           inputs:
-            containerRegistry: 'tf-ado-artifactory-connection'
-            repository: 'tf-ado-repository'
+            containerRegistry: 'tf-ado-artifactory-repo-connection'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
             # tag: $(Build.BuildId) by default - BuildId increased each time
