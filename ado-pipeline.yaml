@@ -58,20 +58,6 @@ stages:
             targetRepo: 'tf-ado-repository'
             imageName: '$(imgBaseName)/test-hello:$(Build.BuildId)'
         
-        - task: ArtifactoryPublishBuildInfo@1
-          condition: always()
-          inputs:
-            artifactoryService: 'tf-ado-artifactory-connection'
-            buildName: '$(Build.DefinitionName)'
-            buildNumber: '$(Build.BuildNumber)'
-        
-        - task: ArtifactoryXrayScan@1
-          condition: always()
-          inputs:
-            artifactoryService: 'tf-ado-artifactory-connection'
-            buildName: '$(Build.DefinitionName)'
-            buildNumber: '$(Build.BuildNumber)'
-            allowFailBuild: true
             
         # OPTION 1: using docker-compose, if a docker-compose.yml exists
         #- task: DockerCompose@0
