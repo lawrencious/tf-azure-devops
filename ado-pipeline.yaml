@@ -38,56 +38,18 @@ stages:
     jobs:
       - job: Build
         steps:
-        #- task: ArtifactoryDocker@1
-        #  inputs:
-        #    command: 'pull'
-        #    artifactoryService: 'tf-ado-artifactory-connection'
-        #    sourceRepo: 'tf-ado-repository'
-        #    imageName: '$(imgBaseName)/hello'
         - task: Docker@2
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'tf-ado-repository/test-hello'
             command: 'build'
             Dockerfile: '**/Dockerfile'
-        
         - task: ArtifactoryDocker@1
           inputs:
             command: 'push'
             artifactoryService: 'tf-ado-artifactory-connection'
             targetRepo: 'tf-ado-repository'
             imageName: '$(imgBaseName)/test-hello:$(Build.BuildId)'
-        
-            
-        # OPTION 1: using docker-compose, if a docker-compose.yml exists
-        #- task: DockerCompose@0
-        #  displayName: 'Building images'
-        #  inputs:
-        #    containerregistrytype: 'Container Registry'
-        #    dockerRegistryEndpoint: 'jfrog-artifactory'
-        #    dockerComposeFile: '**/docker-compose.yml'
-        #    action: 'Build services'
-        #    # fully qualified name set by default
-
-        #- task: DockerCompose@0
-        #  displayName: 'Pushing images'
-        #  inputs:
-        #    containerregistrytype: 'Container Registry'
-        #    dockerRegistryEndpoint: 'jfrog-artifactory'
-        #    dockerComposeFile: '**/docker-compose.yml'
-        #    action: 'Push services'
-
-        # OPTION 2: multiple Docker tasks, a buildAndPush for each image to build and push
-        
-        #- task: Docker@2
-        #  displayName: 'Building and pushing to JFrog'
-        #  inputs:
-        #    containerRegistry: 'tf-ado-artifactory-repo-connection'
-        #    repository: 'tf-ado-repository'
-        #    command: 'buildAndPush'
-        #    Dockerfile: '**/Dockerfile'
-            # tag: $(Build.BuildId) by default - BuildId increased each time
-          
 
   - stage: Deploy
     dependsOn: Build
