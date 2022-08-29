@@ -59,12 +59,14 @@ stages:
             imageName: '$(imgBaseName)/test-hello:$(Build.BuildId)'
         
         - task: ArtifactoryPublishBuildInfo@1
+          condition: always()
           inputs:
             artifactoryService: 'tf-ado-artifactory-connection'
             buildName: '$(Build.DefinitionName)'
             buildNumber: '$(Build.BuildNumber)'
         
         - task: ArtifactoryXrayScan@1
+          condition: always()
           inputs:
             artifactoryService: 'tf-ado-artifactory-connection'
             buildName: '$(Build.DefinitionName)'
