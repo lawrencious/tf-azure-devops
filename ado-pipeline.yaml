@@ -53,7 +53,7 @@ stages:
             command: 'push'
             artifactoryService: 'tf-ado-artifactory-connection'
             targetRepo: 'tf-ado-docker-repo'
-            imageName: '$(imgBaseName)/hello:$(Build.BuildId)'
+            imageName: 'tf-ado-docker-repo/hello:$(Build.BuildId)'
 
   - stage: Deploy
     dependsOn: Build
