@@ -5,7 +5,7 @@ variables:
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
-  imgBaseName: '20.105.145.98:8082/tf-ado-repository'
+  imgBaseName: '20.105.145.98:8081/tf-ado-repository'
 
 trigger:
 - main
