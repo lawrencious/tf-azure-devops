@@ -5,7 +5,7 @@ variables:
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
-  imgBaseName: '20.105.145.98:8082/tf-ado-repository'
+  imgBaseName: '20.105.145.98:8082/tf-ado-docker-repo'
 
 trigger:
 - main
@@ -41,19 +41,19 @@ stages:
         - task: Docker@2
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'tf-ado-repository'
+            repository: 'tf-ado-docker-repo'
             command: 'build'
             Dockerfile: '**/Dockerfile'
         
-        - script: |
-            docker login 20.105.145.98:8082
-            docker push 20.105.145.98:8082/tf-ado-repository/hello:$(Build.BuildId)
-        #- task: ArtifactoryDocker@1
-        #  inputs:
-        #    command: 'push'
-        #    artifactoryService: 'tf-ado-artifactory-connection'
-        #    targetRepo: 'tf-ado-repository'
-        #    imageName: '$(imgBaseName)/hello:$(Build.BuildId)'
+        #- script: |
+        #    docker login 20.105.145.98:8082
+        #    docker push 20.105.145.98:8082/tf-ado-docker-repo/hello:$(Build.BuildId)
+        - task: ArtifactoryDocker@1
+          inputs:
+            command: 'push'
+            artifactoryService: 'tf-ado-artifactory-connection'
+            targetRepo: 'tf-ado-docker-repo'
+            imageName: '$(imgBaseName)/hello:$(Build.BuildId)'
 
   - stage: Deploy
     dependsOn: Build
