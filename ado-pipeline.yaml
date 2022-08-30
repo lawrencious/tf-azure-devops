@@ -27,7 +27,6 @@ stages:
         displayName: Installing kubectl 
         inputs:
           kubectlVersion: 'latest'
-      
       - task: ArtifactoryToolsInstaller@1
         inputs:
           artifactoryService: 'tf-ado-artifactory-connection'
