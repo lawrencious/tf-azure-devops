@@ -17,7 +17,7 @@ stages:
   - stage: Configuration
     jobs:
     - job: Configuration
-      displayName: Installing Docker and kubectl on agent
+      displayName: Installing Docker, kubectl, JFrog CLI
       steps:
       - task: DockerInstaller@0
         displayName: Installing Docker
