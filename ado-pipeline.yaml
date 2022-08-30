@@ -44,12 +44,16 @@ stages:
             repository: 'tf-ado-repository'
             command: 'build'
             Dockerfile: '**/Dockerfile'
-        - task: ArtifactoryDocker@1
-          inputs:
-            command: 'push'
-            artifactoryService: 'tf-ado-artifactory-connection'
-            targetRepo: 'tf-ado-repository'
-            imageName: '$(imgBaseName)/hello:$(Build.BuildId)'
+        
+        - script: |
+            docker login 20.105.145.98:8082
+            docker push 20.105.145.98:8082/tf-ado-repository/hello:$(Build.BuildId)
+        #- task: ArtifactoryDocker@1
+        #  inputs:
+        #    command: 'push'
+        #    artifactoryService: 'tf-ado-artifactory-connection'
+        #    targetRepo: 'tf-ado-repository'
+        #    imageName: '$(imgBaseName)/hello:$(Build.BuildId)'
 
   - stage: Deploy
     dependsOn: Build
