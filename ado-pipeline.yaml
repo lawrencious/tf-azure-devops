@@ -44,10 +44,10 @@ stages:
             command: 'build'
             Dockerfile: '**/Dockerfile'
         
-        - script: |
+        - bash: |
             sudo docker login 20.105.145.98:8082 -u lorenzo -p Password123!
             sudo docker image ls
-            sudo docker push $IMAGEBASENAME/hello:$BUILD_BUILDID
+            sudo docker push ${imageBaseName}/hello:${Build.BuildId}
         #- task: ArtifactoryDocker@1
         #  inputs:
         #    command: 'push'
