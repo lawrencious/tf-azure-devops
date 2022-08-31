@@ -47,7 +47,7 @@ stages:
         - script: |
             sudo docker login 20.105.145.98:8082 -u lorenzo -p Password123!
             sudo docker image ls
-            sudo docker tag $IMAGEBASENAME/hello:latest tf-ado-docker-remote/hello:$BUILD_BUILDID
+            sudo docker tag $(IMGBASENAME)/hello:latest tf-ado-docker-remote/hello:$(BUILD_BUILDID)
         # sudo docker push $IMAGEBASENAME/hello:$BUILD_BUILDID
         #- task: ArtifactoryDocker@1
         #  inputs:
