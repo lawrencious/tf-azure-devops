@@ -32,9 +32,10 @@ stages:
       #    artifactoryService: 'tf-ado-artifactory-connection'
       #    cliInstallationRepo: 'cli'
 
-      #- script: |
-      #    sudo touch /etc/docker/daemon.json
-      #    sudo printf "{\n\t'insecure-registries' : ['http://20.105.145.98:8082']\n}\n" > /etc/docker/daemon.json
+      - script: |
+          sudo su
+          touch /etc/docker/daemon.json
+          printf "{\n\t'insecure-registries' : ['http://20.105.145.98:8082']\n}\n" > /etc/docker/daemon.json
           
   - stage: Build
     displayName: 'Building and pushing images'
