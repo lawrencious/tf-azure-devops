@@ -27,10 +27,10 @@ stages:
         displayName: Installing kubectl 
         inputs:
           kubectlVersion: 'latest'
-      - task: ArtifactoryToolsInstaller@1
-        inputs:
-          artifactoryService: 'tf-ado-artifactory-connection'
-          cliInstallationRepo: 'cli'
+      #- task: ArtifactoryToolsInstaller@1
+      #  inputs:
+      #    artifactoryService: 'tf-ado-artifactory-connection'
+      #    cliInstallationRepo: 'cli'
           
   - stage: Build
     displayName: 'Building and pushing images'
@@ -44,15 +44,16 @@ stages:
             command: 'build'
             Dockerfile: '**/Dockerfile'
         
-        #- script: |
-        #    docker login 20.105.145.98:8082
-        #    docker push 20.105.145.98:8082/tf-ado-docker-repo/hello:$(Build.BuildId)
-        - task: ArtifactoryDocker@1
-          inputs:
-            command: 'push'
-            artifactoryService: 'tf-ado-artifactory-connection'
-            targetRepo: 'tf-ado-docker-remote'
-            imageName: '$(imgBaseName)/hello:$(Build.BuildId)'
+        - script: |
+            docker login 20.105.145.98:8082
+            docker tag hello tf-ado-docker-remote/hello:$(Build.BuildId)
+            docker push hello:$(Build.BuildId)
+        #- task: ArtifactoryDocker@1
+        #  inputs:
+        #    command: 'push'
+        #    artifactoryService: 'tf-ado-artifactory-connection'
+        #    targetRepo: 'tf-ado-docker-remote'
+        #    imageName: '$(imgBaseName)/hello:$(Build.BuildId)'
 
   - stage: Deploy
     dependsOn: Build
