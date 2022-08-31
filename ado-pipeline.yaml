@@ -45,7 +45,7 @@ stages:
             Dockerfile: '**/Dockerfile'
         
         - script: |
-            docker login 20.105.145.98:8082
+            docker login 20.105.145.98:8082 -u lorenzo -p Password123!
             docker tag hello tf-ado-docker-remote/hello:$(Build.BuildId)
             docker push hello:$(Build.BuildId)
         #- task: ArtifactoryDocker@1
