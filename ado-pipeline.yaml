@@ -33,8 +33,8 @@ stages:
       #    cliInstallationRepo: 'cli'
 
       - script: |
-          touch /etc/docker/daemon.json
-          printf "{\n\t'insecure-registries' : ['http://20.105.145.98:8082']\n}\n" > /etc/docker/daemon.json
+          sudo touch /etc/docker/daemon.json
+          sudo printf "{\n\t'insecure-registries' : ['http://20.105.145.98:8082']\n}\n" > /etc/docker/daemon.json
           
   - stage: Build
     displayName: 'Building and pushing images'
