@@ -5,7 +5,7 @@ variables:
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
-  imgBaseName: '20.105.145.98:8082/artifactory/tf-ado-cicd-repo'
+  imgBaseName: 'tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082/artifactory/tf-ado-cicd-repo'
 
 trigger:
 - main
@@ -34,7 +34,7 @@ stages:
       - script: |
           sudo touch /etc/docker/daemon.json
           sudo chmod a+w /etc/docker/daemon.json
-          printf "{\n\t'insecure-registries' : ['20.105.145.98:8082']\n}\n" > /etc/docker/daemon.json
+          printf "{\n\t'insecure-registries' : ['tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082']\n}\n" > /etc/docker/daemon.json
         
   - stage: Build
     displayName: 'Building and pushing images'
@@ -49,7 +49,7 @@ stages:
             Dockerfile: '**/Dockerfile'
         
         - script: |
-            sudo docker login 20.105.145.98:8082 -u lorenzo -p Password123!
+            sudo docker login tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082 -u lorenzo -p Password123!
             sudo docker image ls
             sudo docker push $(IMGBASENAME)/hello:$(Build.BuildId)
         #- task: ArtifactoryDocker@1
