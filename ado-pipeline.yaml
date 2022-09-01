@@ -5,7 +5,7 @@ variables:
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
-  imgBaseName: 'tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082/artifactory/tf-ado-cicd-repo'
+  imgBaseName: 'tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082/artifactory/tf-ado-cicd-remote'
 
 trigger:
 - main
@@ -44,7 +44,7 @@ stages:
         - task: Docker@2
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'artifactory/tf-ado-cicd-repo/hello'
+            repository: 'artifactory/tf-ado-cicd-remote/hello'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
         
