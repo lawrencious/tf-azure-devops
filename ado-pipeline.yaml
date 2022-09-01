@@ -45,13 +45,13 @@ stages:
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'artifactory/tf-ado-cicd-repo/hello'
-            command: 'build'
+            command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
         
-        - script: |
-            sudo docker login tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082 -u lorenzo -p Password123!
-            sudo docker image ls
-        # sudo docker push $(IMGBASENAME)/hello:$(Build.BuildId)
+        #- script: |
+        #    docker login tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082 -u lorenzo -p Password123!
+        #    docker image ls
+        #    docker push $(IMGBASENAME)/hello:$(Build.BuildId)
         #- task: ArtifactoryDocker@1
         #  inputs:
         #    command: 'push'
