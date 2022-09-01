@@ -51,7 +51,7 @@ stages:
         - script: |
             sudo docker login tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082 -u lorenzo -p Password123!
             sudo docker image ls
-            sudo docker push $(IMGBASENAME)/hello:$(Build.BuildId)
+        # sudo docker push $(IMGBASENAME)/hello:$(Build.BuildId)
         #- task: ArtifactoryDocker@1
         #  inputs:
         #    command: 'push'
