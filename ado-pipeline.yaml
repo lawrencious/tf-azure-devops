@@ -27,10 +27,10 @@ stages:
         displayName: Installing kubectl 
         inputs:
           kubectlVersion: 'latest'
-      #- task: ArtifactoryToolsInstaller@1
-      #  inputs:
-      #    artifactoryService: 'tf-ado-artifactory-connection'
-      #    cliInstallationRepo: 'cli'
+      - task: ArtifactoryToolsInstaller@1
+        inputs:
+          artifactoryService: 'tf-ado-artifactory-connection'
+          cliInstallationRepo: 'cli'
       - script: |
           sudo touch /etc/docker/daemon.json
           sudo chmod a+w /etc/docker/daemon.json
@@ -45,19 +45,19 @@ stages:
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'artifactory/tf-ado-cicd-remote/hello'
-            command: 'buildAndPush'
+            command: 'build'
             Dockerfile: '**/Dockerfile'
         
         #- script: |
         #    docker login tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082 -u lorenzo -p Password123!
         #    docker image ls
         #    docker push $(IMGBASENAME)/hello:$(Build.BuildId)
-        #- task: ArtifactoryDocker@1
-        #  inputs:
-        #    command: 'push'
-        #    artifactoryService: 'tf-ado-artifactory-connection'
-        #    targetRepo: 'tf-ado-docker-remote'
-        #    imageName: '$(imgBaseName)/hello:$(Build.BuildId)'
+        - task: ArtifactoryDocker@1
+          inputs:
+            command: 'push'
+            artifactoryService: 'tf-ado-artifactory-connection'
+            targetRepo: 'tf-ado-docker-remote'
+            imageName: '$(imgBaseName)/hello:$(Build.BuildId)'
 
   - stage: Deploy
     dependsOn: Build
