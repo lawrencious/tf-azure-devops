@@ -48,10 +48,10 @@ stages:
             command: 'build'
             Dockerfile: '**/Dockerfile'
         
-        #- script: |
-        #    docker login tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082 -u lorenzo -p Password123!
-        #    docker image ls
-        #    docker push $(IMGBASENAME)/hello:$(Build.BuildId)
+        - script: |
+            docker login tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082 -u lorenzo -p Password123!
+            docker image ls
+        # docker push $(IMGBASENAME)/hello:$(Build.BuildId)
         - task: ArtifactoryDocker@1
           inputs:
             command: 'push'
