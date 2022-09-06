@@ -39,10 +39,13 @@ stages:
     jobs:
       - job: Build
         steps:
-        - script: |
-            docker login $(ARTIFACTORY_URL) -u $(ARTIFACTORY_USER) -p $(ARTIFACTORY_PASSWORD)
-            
+        #- script: |
+        #   docker login $(ARTIFACTORY_URL) -u $(ARTIFACTORY_USER) -p $(ARTIFACTORY_PASSWORD)   
 
+        - task: Docker@2
+          inputs:
+            containerRegistry: 'tf-ado-artifactory-repo-connection'
+            command: 'login'
         - task: Docker@2
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
