@@ -5,7 +5,7 @@ variables:
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
-  imgBaseName: 'tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082/artifactory/tf-ado-cicd-repo'
+  imgBaseName: 'tf-ado-cicd-repo'
 
 trigger:
 - main
@@ -23,18 +23,16 @@ stages:
         displayName: Installing Docker
         inputs:
           dockerVersion: '17.09.0-ce'
+          
       - task: KubectlInstaller@0
         displayName: Installing kubectl 
         inputs:
           kubectlVersion: 'latest'
+
       - task: ArtifactoryToolsInstaller@1
         inputs:
           artifactoryService: 'tf-ado-artifactory-connection'
           cliInstallationRepo: 'cli'
-      - script: |
-          sudo touch /etc/docker/daemon.json
-          sudo chmod a+w /etc/docker/daemon.json
-          printf "{\n\t'insecure-registries' : ['https://tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082']\n}\n" > /etc/docker/daemon.json
         
   - stage: Build
     displayName: 'Building and pushing images'
@@ -44,14 +42,10 @@ stages:
         - task: Docker@2
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'artifactory/tf-ado-cicd-repo/hello'
+            repository: 'tf-ado-cicd-repo/hello'
             command: 'build'
             Dockerfile: '**/Dockerfile'
         
-        - script: |
-            docker login tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082 -u lorenzo -p Password123!
-            docker image ls
-        # docker push $(IMGBASENAME)/hello:$(Build.BuildId)
         - task: ArtifactoryDocker@1
           inputs:
             command: 'push'
