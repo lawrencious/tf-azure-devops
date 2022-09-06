@@ -5,7 +5,7 @@ variables:
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
-  imgBaseName: 'tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082/artifactory/tf-ado-cicd-remote'
+  imgBaseName: 'tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082/artifactory/tf-ado-cicd-repo'
 
 trigger:
 - main
@@ -34,7 +34,7 @@ stages:
       - script: |
           sudo touch /etc/docker/daemon.json
           sudo chmod a+w /etc/docker/daemon.json
-          printf "{\n\t'insecure-registries' : ['tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082']\n}\n" > /etc/docker/daemon.json
+          printf "{\n\t'insecure-registries' : ['https://tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082']\n}\n" > /etc/docker/daemon.json
         
   - stage: Build
     displayName: 'Building and pushing images'
@@ -44,7 +44,7 @@ stages:
         - task: Docker@2
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'artifactory/tf-ado-cicd-remote/hello'
+            repository: 'artifactory/tf-ado-cicd-repo/hello'
             command: 'build'
             Dockerfile: '**/Dockerfile'
         
@@ -56,7 +56,7 @@ stages:
           inputs:
             command: 'push'
             artifactoryService: 'tf-ado-artifactory-connection'
-            targetRepo: 'tf-ado-docker-remote'
+            targetRepo: 'tf-ado-cicd-repo'
             imageName: '$(imgBaseName)/hello:$(Build.BuildId)'
 
   - stage: Deploy
