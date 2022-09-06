@@ -5,10 +5,10 @@ variables:
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
-  imgBaseName: 'http://tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082/artifactory/tf-ado-cicd-repo'
+  imgBaseName: 'tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082/artifactory/tf-ado-cicd-repo'
 
-trigger:
-- main
+#trigger:
+#- main
 
 pool: 
   vmImage: ubuntu-latest
