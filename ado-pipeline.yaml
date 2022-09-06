@@ -5,7 +5,7 @@ variables:
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
-  imgBaseName: '${{ secrets.ARTIFACTORY_URL }}/tf-ado-cicd-repo'
+  imgBaseName: '$(ARTIFACTORY_URL)/tf-ado-cicd-repo'
 
 trigger:
 - main
@@ -40,7 +40,7 @@ stages:
       - job: Build
         steps:
         - script: |
-            docker login ${{ secrets.ARTIFACTORY_URL }} -u ${{ secrets.ARTIFACTORY_USER }} -p ${{ secrets.ARTIFACTORY_PASSWORD }}
+            docker login $(ARTIFACTORY_URL) -u $(ARTIFACTORY_USER) -p $(ARTIFACTORY_PASSWORD)
             
 
         - task: Docker@2
