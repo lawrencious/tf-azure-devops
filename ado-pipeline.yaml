@@ -40,7 +40,7 @@ stages:
       - job: Build
         steps:
         - script: |
-            'docker login tf-ado-imgrepo.westeurope.cloudapp.azure.com -u lorenzo -p Password123!'
+            docker login tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082 -u lorenzo -p Password123!
 
         - task: Docker@2
           inputs:
