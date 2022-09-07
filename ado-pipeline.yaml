@@ -41,8 +41,8 @@ stages:
 
         - script: |
             docker build .
-            docker image tag hello:$(Build.BuildId) tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082/artifactory/tf-ado-cicd-repo/hello:$(Build.BuildId)
-            docker image push tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082/artifactory/tf-ado-cicd-repo/hello:$(Build.BuildId) 
+            docker image tag tf-ado-imgrepo.westeurope.cloudapp.azure.com:8082/artifactory/tf-ado-cicd-repo/hello:$(Build.BuildId) hello:$(Build.BuildId)
+            docker image push hello:$(Build.BuildId)
 
         #- task: Docker@2
         #  inputs:
