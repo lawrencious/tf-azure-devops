@@ -43,19 +43,13 @@ stages:
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             command: 'login'
-        #- task: Docker@2
-        #  inputs:
-        #    containerRegistry: 'tf-ado-artifactory-repo-connection'
-        #    repository: 'tf-ado-cicd-repo/hello'
-        #    command: 'buildAndPush'
-        #    Dockerfile: '**/Dockerfile'
         
-        - task: ArtifactoryDocker@1
+        - task: Docker@2
           inputs:
-            command: 'push'
-            artifactoryService: 'tf-ado-artifactory-connection'
-            targetRepo: 'tf-ado-cicd-repo'
-            imageName: '$(imgBaseName)/hello:$(Build.BuildId)'
+            containerRegistry: 'tf-ado-artifactory-repo-connection'
+            repository: 'tf-ado-cicd-repo/hello'
+            command: 'buildAndPush'
+            Dockerfile: '**/Dockerfile'
 
   - stage: Deploy
     dependsOn: Build
