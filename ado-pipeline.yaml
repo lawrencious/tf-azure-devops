@@ -5,6 +5,7 @@ variables:
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
+  imgBaseName: 'tf-ado-imgrepo.westeurope.cloudapp.azure.com/artifactory'
 
 trigger:
 - main
@@ -28,10 +29,10 @@ stages:
         inputs:
           kubectlVersion: 'latest'
 
-      #- task: ArtifactoryToolsInstaller@1
-      #  inputs:
-      #    artifactoryService: 'tf-ado-artifactory-connection'
-      #    cliInstallationRepo: 'cli'
+      - task: ArtifactoryToolsInstaller@1
+        inputs:
+          artifactoryService: 'tf-ado-artifactory-connection'
+          cliInstallationRepo: 'cli'
         
   - stage: Build
     displayName: 'Building and pushing images'
@@ -41,9 +42,16 @@ stages:
         - task: Docker@2
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'tf-ado-cicd-repo'
-            command: 'buildAndPush'
+            repository: 'artifactory/tf-ado-cicd-repo'
+            command: 'build'
             Dockerfile: '**/Dockerfile'
+        
+        - task: ArtifactoryDocker@1
+          inputs:
+            command: 'push'
+            artifactoryService: 'tf-ado-artifactory-connection'
+            targetRepo: 'tf-ado-cicd-repo'
+            imageName: '$(imgBaseName)/tf-ado-cicd-repo:$(Build.BuildId)'
 
   - stage: Deploy
     dependsOn: Build
