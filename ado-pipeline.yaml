@@ -42,7 +42,7 @@ stages:
         - task: Docker@2
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'tf-ado-cicd-repo'
+            repository: 'artifactory/tf-ado-cicd-repo'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
 
