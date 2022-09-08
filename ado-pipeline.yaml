@@ -43,16 +43,16 @@ stages:
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'artifactory/tf-ado-cicd-repo'
-            command: 'build'
+            command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
         
-        - task: JFrogDocker@1
-          inputs:
-            command: 'Push'
-            artifactoryConnection: 'tf-ado-artifctory-conn'
-            imageName: '$(imgBaseName)/tf-ado-cicd-repo:$(Build.BuildId)'
-            threads: '3'
-            skipLogin: false
+        #- task: JFrogDocker@1
+        #  inputs:
+        #    command: 'Push'
+        #    artifactoryConnection: 'tf-ado-artifctory-conn'
+        #    imageName: '$(imgBaseName)/tf-ado-cicd-repo:$(Build.BuildId)'
+        #    threads: '3'
+        #    skipLogin: false
 
   - stage: Deploy
     dependsOn: Build
