@@ -39,12 +39,15 @@ stages:
       - job: Build
         steps:
         
-        - task: Docker@2
-          inputs:
-            containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'artifactory/tf-ado-cicd-repo'
-            command: 'buildAndPush'
-            Dockerfile: '**/Dockerfile'
+        - script: |
+            docker build .
+            docker image push $(docker ps -a -q)
+        #- task: Docker@2
+        #  inputs:
+        #    containerRegistry: 'tf-ado-artifactory-repo-connection'
+        #    repository: 'artifactory/tf-ado-cicd-repo'
+        #    command: 'buildAndPush'
+        #    Dockerfile: '**/Dockerfile'
 
   - stage: Deploy
     dependsOn: Build
