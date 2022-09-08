@@ -22,7 +22,7 @@ stages:
       - task: DockerInstaller@0
         displayName: Installing Docker
         inputs:
-          dockerVersion: '17.09.0-ce'
+          dockerVersion: '17.09.0'
           
       - task: KubectlInstaller@0
         displayName: Installing kubectl 
