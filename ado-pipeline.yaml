@@ -40,8 +40,7 @@ stages:
         steps:
         
         - script: |
-            docker build .
-            docker image push $(docker ps -a -q)
+            docker image push | docker build .
         #- task: Docker@2
         #  inputs:
         #    containerRegistry: 'tf-ado-artifactory-repo-connection'
