@@ -41,6 +41,7 @@ stages:
       - job: Build
         steps:
         - task: Docker@2
+          condition: ne(variables.usingJF, 'true')
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             command: 'login'
