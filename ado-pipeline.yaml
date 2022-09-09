@@ -30,10 +30,9 @@ stages:
         inputs:
           kubectlVersion: 'latest'
 
-      - task: ArtifactoryToolsInstaller@1
-        condition: eq(variables.usingJF, 'true')
+      - task: JFrogToolsInstaller@1
         inputs:
-          artifactoryService: 'tf-ado-artifactory-conn'
+          artifactoryConnection: 'tf-ado-artifactory-conn'
           cliInstallationRepo: 'cli'
         
   - stage: Build
