@@ -55,14 +55,13 @@ stages:
             command: 'push'
             Dockerfile: '**/Dockerfile'
             
-        - task: JFrogDocker@1
+        - task: ArtifactoryDocker@1
           condition: eq(variables.usingJF, 'true')
           inputs:
-            command: 'Push'
-            artifactoryConnection: 'tf-ado-artifactory-conn'
+            command: 'push'
+            artifactoryService: 'tf-ado-artifactory-cli-conn'
+            targetRepo: 'tf-ado-cicd-repo'
             imageName: '$(imgBaseName)/tf-ado-cicd-repo:$(Build.BuildId)'
-            threads: '3'
-            skipLogin: false
 
   - stage: Deploy
     dependsOn: Build
