@@ -60,7 +60,7 @@ stages:
           condition: eq(variables.usingJF, 'true')
           inputs:
             command: 'Push'
-            artifactoryConnection: 'tf-ado-artifctory-conn'
+            artifactoryConnection: 'tf-ado-artifactory-conn'
             imageName: '$(imgBaseName)/tf-ado-cicd-repo:$(Build.BuildId)'
             threads: '3'
             skipLogin: false
