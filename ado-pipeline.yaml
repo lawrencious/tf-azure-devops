@@ -47,7 +47,7 @@ stages:
         #    command: 'login'
         - script: |
             docker login $(ARTIFACTORYURL) -u $(ARTIFACTORY_USER) -p $(ARTIFACTORY_PASSWORD)
-          condition: ne(variables[usingJF, 'true'])
+          condition: ne(variables[usingJF], 'true')
           displayName: 'Logging to JFrog Artifactory'
         
         - task: Docker@2
