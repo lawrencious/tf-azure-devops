@@ -6,6 +6,7 @@ variables:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
   imgBaseName: 'tf-ado-imgrepo.westeurope.cloudapp.azure.com/artifactory'
+  usingJF: 'false'
 
 trigger:
 - main
@@ -29,10 +30,11 @@ stages:
         inputs:
           kubectlVersion: 'latest'
 
-      #- task: ArtifactoryToolsInstaller@1
-      #  inputs:
-      #    artifactoryService: 'tf-ado-artifactory-connection'
-      #    cliInstallationRepo: 'cli'
+      - task: ArtifactoryToolsInstaller@1
+        condition: eq(variables.usingJF, 'true')
+        inputs:
+          artifactoryService: 'tf-ado-artifactory-connection'
+          cliInstallationRepo: 'cli'
         
   - stage: Build
     displayName: 'Building and pushing images'
@@ -47,19 +49,21 @@ stages:
             Dockerfile: '**/Dockerfile'
         
         - task: Docker@2
+          condition: ne(variables.usingJF, 'true')
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'artifactory/tf-ado-cicd-repo'
             command: 'push'
             Dockerfile: '**/Dockerfile'
             
-        #- task: JFrogDocker@1
-        #  inputs:
-        #    command: 'Push'
-        #    artifactoryConnection: 'tf-ado-artifctory-conn'
-        #    imageName: '$(imgBaseName)/tf-ado-cicd-repo:$(Build.BuildId)'
-        #    threads: '3'
-        #    skipLogin: false
+        - task: JFrogDocker@1
+          condition: eq(variables.usingJF, 'true')
+          inputs:
+            command: 'Push'
+            artifactoryConnection: 'tf-ado-artifctory-conn'
+            imageName: '$(imgBaseName)/tf-ado-cicd-repo:$(Build.BuildId)'
+            threads: '3'
+            skipLogin: false
 
   - stage: Deploy
     dependsOn: Build
