@@ -42,11 +42,6 @@ stages:
         - task: Docker@2
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            command: 'login'
-            
-        - task: Docker@2
-          inputs:
-            containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'artifactory/tf-ado-cicd-repo'
             command: 'build'
             Dockerfile: '**/Dockerfile'
@@ -57,6 +52,7 @@ stages:
             repository: 'artifactory/tf-ado-cicd-repo'
             command: 'push'
             Dockerfile: '**/Dockerfile'
+            
         #- task: JFrogDocker@1
         #  inputs:
         #    command: 'Push'
