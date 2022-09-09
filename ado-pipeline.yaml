@@ -33,7 +33,7 @@ stages:
       - task: ArtifactoryToolsInstaller@1
         condition: eq(variables.usingJF, 'true')
         inputs:
-          artifactoryService: 'tf-ado-artifactory-connection'
+          artifactoryService: 'tf-ado-artifactory-conn'
           cliInstallationRepo: 'cli'
         
   - stage: Build
