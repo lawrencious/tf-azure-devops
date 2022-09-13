@@ -51,7 +51,7 @@ stages:
         #  displayName: 'Logging to JFrog Artifactory'
         
         - task: Docker@2
-          condition: eq(variable.separetedBuildPush, 'true')
+          condition: eq(variables.separetedBuildPush, 'true')
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'artifactory/tf-ado-cicd-repo'
@@ -60,10 +60,10 @@ stages:
         
         - script: |
             docker image ls
-          condition: eq(variable.separetedBuildPush, 'true')
+          condition: eq(variables.separetedBuildPush, 'true')
         
         - task: Docker@2
-          condition: and(ne(variables.usingJF, 'true'), eq(variable.separetedBuildPush, 'true'))
+          condition: and(ne(variables.usingJF, 'true'), eq(variables.separetedBuildPush, 'true'))
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'artifactory/tf-ado-cicd-repo'
@@ -71,7 +71,7 @@ stages:
             Dockerfile: '**/Dockerfile'
         
         - task: Docker@2
-          condition: and(ne(variables.usingJF, 'true'), ne(variable.separetedBuildPush, 'true'))
+          condition: and(ne(variables.usingJF, 'true'), ne(variables.separetedBuildPush, 'true'))
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'artifactory/tf-ado-cicd-repo'
