@@ -6,7 +6,7 @@ variables:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
   imgBaseName: '$(artifactoryURL)/artifactory'
-  usingJF: 'false'
+  usingJF: 'true'
   separetedBuildPush: 'true'
 
 trigger:
@@ -32,6 +32,7 @@ stages:
           kubectlVersion: 'latest'
 
       - task: ArtifactoryToolsInstaller@1
+        condition: eq(variables.usingJF, 'true')
         inputs:
           artifactoryService: 'tf-ado-artifactory-cli-conn'
           cliInstallationRepo: 'cli'
