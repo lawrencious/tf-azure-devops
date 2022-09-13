@@ -6,7 +6,8 @@ variables:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
   imgBaseName: '$(artifactoryURL)/artifactory'
-  usingJF: 'true'
+  usingJF: 'false'
+  separetedBuildPush: 'false'
 
 trigger:
 - main
@@ -41,7 +42,6 @@ stages:
       - job: Build
         steps:
         - task: Docker@2
-          #condition: ne(variables.usingJF, 'true')
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             command: 'login'
@@ -51,18 +51,31 @@ stages:
         #  displayName: 'Logging to JFrog Artifactory'
         
         - task: Docker@2
+          condition: eq(variable.separetedBuildPush, 'true')
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'artifactory/tf-ado-cicd-repo'
             command: 'build'
             Dockerfile: '**/Dockerfile'
         
+        - script: |
+            docker image ls
+          condition: eq(variable.separetedBuildPush, 'true')
+        
         - task: Docker@2
-          condition: ne(variables.usingJF, 'true')
+          condition: and(ne(variables.usingJF, 'true'), eq(variable.separetedBuildPush, 'true'))
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'artifactory/tf-ado-cicd-repo'
             command: 'push'
+            Dockerfile: '**/Dockerfile'
+        
+        - task: Docker@2
+          condition: and(ne(variables.usingJF, 'true'), ne(variable.separetedBuildPush, 'true'))
+          inputs:
+            containerRegistry: 'tf-ado-artifactory-repo-connection'
+            repository: 'artifactory/tf-ado-cicd-repo'
+            command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
             
         - task: ArtifactoryDocker@1
