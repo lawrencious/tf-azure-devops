@@ -40,15 +40,15 @@ stages:
     jobs:
       - job: Build
         steps:
-        #- task: Docker@2
-        #  condition: ne(variables.usingJF, 'true')
-        #  inputs:
-        #    containerRegistry: 'tf-ado-artifactory-repo-connection'
-        #    command: 'login'
-        - script: |
-            docker login $(ARTIFACTORYURL) -u $(ARTIFACTORY_USER) -p $(ARTIFACTORY_PASSWORD)
+        - task: Docker@2
           condition: ne(variables.usingJF, 'true')
-          displayName: 'Logging to JFrog Artifactory'
+          inputs:
+            containerRegistry: 'tf-ado-artifactory-repo-connection'
+            command: 'login'
+        #- script: |
+        #    docker login $(ARTIFACTORYURL) -u $(ARTIFACTORY_USER) -p $(ARTIFACTORY_PASSWORD)
+        #  condition: ne(variables.usingJF, 'true')
+        #  displayName: 'Logging to JFrog Artifactory'
         
         - task: Docker@2
           inputs:
