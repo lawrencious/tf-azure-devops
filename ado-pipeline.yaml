@@ -31,10 +31,10 @@ stages:
         inputs:
           kubectlVersion: 'latest'
 
-      #- task: ArtifactoryToolsInstaller@1
-      #  inputs:
-      #    artifactoryService: 'tf-ado-artifactory-cli-conn'
-      #    cliInstallationRepo: 'cli'
+      - task: ArtifactoryToolsInstaller@1
+        inputs:
+          artifactoryService: 'tf-ado-artifactory-cli-conn'
+          cliInstallationRepo: 'cli'
         
   - stage: Build
     displayName: 'Building and pushing images'
@@ -42,16 +42,18 @@ stages:
       - job: Build
         steps:
         - task: Docker@2
+          displayName: 'Logging to JFA (Docker task)'
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             command: 'login'
         #- script: |
         #    docker login $(ARTIFACTORYURL) -u $(ARTIFACTORY_USER) -p $(ARTIFACTORY_PASSWORD)
         #  condition: ne(variables.usingJF, 'true')
-        #  displayName: 'Logging to JFrog Artifactory'
+        #  displayName: 'Logging to JFA (script)'
         
         - task: Docker@2
           condition: eq(variables.separetedBuildPush, 'true')
+          displayName: 'Building image'
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'artifactory/tf-ado-cicd-repo'
@@ -61,9 +63,11 @@ stages:
         - script: |
             docker image ls
           condition: eq(variables.separetedBuildPush, 'true')
+          displayName: 'Listing local images'
         
         - task: Docker@2
           condition: and(ne(variables.usingJF, 'true'), eq(variables.separetedBuildPush, 'true'))
+          displayName: 'Pushing image (Docker)'
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'artifactory/tf-ado-cicd-repo'
@@ -72,6 +76,7 @@ stages:
         
         - task: Docker@2
           condition: and(ne(variables.usingJF, 'true'), ne(variables.separetedBuildPush, 'true'))
+          displayName: 'Building and pushing image'
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'artifactory/tf-ado-cicd-repo'
@@ -79,6 +84,7 @@ stages:
             Dockerfile: '**/Dockerfile'
             
         - task: ArtifactoryDocker@1
+          displayName: 'Pushing image (JFA)'
           condition: eq(variables.usingJF, 'true')
           inputs:
             command: 'push'
