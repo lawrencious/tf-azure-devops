@@ -7,7 +7,7 @@ variables:
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
   imgBaseName: '$(artifactoryURL)/artifactory'
   usingJF: 'true'
-  separetedBuildPush: 'false'
+  separetedBuildPush: 'true'
 
 trigger:
 - main
