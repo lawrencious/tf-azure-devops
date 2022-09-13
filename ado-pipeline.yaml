@@ -5,7 +5,7 @@ variables:
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
-  imgBaseName: 'variables[artifactoryURL]/artifactory'
+  imgBaseName: '$(artifactoryURL)/artifactory'
   usingJF: 'true'
 
 trigger:
