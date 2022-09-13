@@ -46,9 +46,9 @@ stages:
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             command: 'login'
-        #- script: |
-        #    docker login $(ARTIFACTORYURL) -u $(ARTIFACTORY_USER) -p $(ARTIFACTORY_PASSWORD)
-        #  displayName: 'Logging to JFA (script)'
+        - script: |
+            docker login $(ARTIFACTORYURL) -u $(ARTIFACTORY_USER) -p $(ARTIFACTORY_PASSWORD)
+          displayName: 'Logging to JFA (script)'
         
         - task: Docker@2
           condition: eq(variables.separetedBuildPush, 'true')
