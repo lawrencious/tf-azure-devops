@@ -6,7 +6,7 @@ variables:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
   imgBaseName: '$(artifactoryURL)/artifactory'
-  usingJF: 'true'
+  usingJF: 'false'
   separetedBuildPush: 'true'
 
 trigger:
@@ -65,15 +65,6 @@ stages:
           displayName: 'Listing local images'
         
         - task: Docker@2
-          condition: and(ne(variables.usingJF, 'true'), eq(variables.separetedBuildPush, 'true'))
-          displayName: 'Pushing image (Docker)'
-          inputs:
-            containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'artifactory/tf-ado-cicd-repo'
-            command: 'push'
-            Dockerfile: '**/Dockerfile'
-        
-        - task: Docker@2
           condition: and(ne(variables.usingJF, 'true'), ne(variables.separetedBuildPush, 'true'))
           displayName: 'Building and pushing image'
           inputs:
@@ -81,7 +72,16 @@ stages:
             repository: 'artifactory/tf-ado-cicd-repo'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
-            
+
+        - task: Docker@2
+          condition: and(ne(variables.usingJF, 'true'), eq(variables.separetedBuildPush, 'true'))
+          displayName: 'Pushing image (Docker)'
+          inputs:
+            containerRegistry: 'tf-ado-artifactory-repo-connection'
+            repository: 'artifactory/tf-ado-cicd-repo'
+            command: 'push'
+            Dockerfile: '**/Dockerfile'
+
         - task: ArtifactoryDocker@1
           displayName: 'Pushing image (JFA)'
           condition: eq(variables.usingJF, 'true')
