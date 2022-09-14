@@ -6,7 +6,7 @@ variables:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
   imgBaseName: '$(artifactoryURL)/artifactory'
-  usingJF: 'true'
+  usingJF: 'false'
   separetedBuildPush: 'true'
 
 trigger:
