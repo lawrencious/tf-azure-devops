@@ -30,12 +30,6 @@ stages:
         displayName: Installing kubectl 
         inputs:
           kubectlVersion: 'latest'
-
-      #- task: ArtifactoryToolsInstaller@1
-      #  condition: eq(variables.usingJF, 'true')
-      #  inputs:
-      #    artifactoryService: 'tf-ado-artifactory-cli-conn'
-      #    cliInstallationRepo: 'cli'
         
   - stage: Build
     displayName: 'Building and pushing images'
@@ -70,9 +64,6 @@ stages:
             repository: 'artifactory/tf-ado-docker-local'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
-        
-        - script: |
-            sleep 30
         
         - task: Docker@2
           condition: and(ne(variables.usingJF, 'true'), eq(variables.separetedBuildPush, 'true'))
