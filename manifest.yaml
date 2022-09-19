@@ -32,3 +32,20 @@ spec:
     port: 80
     targetPort: 8080
   type: LoadBalancer
+---
+apiVersion: v1
+kind: Ingress
+metadata:
+  name: hello-world-ingress
+spec:
+  ingressClassName: hello-world-ingress
+  rules:
+  - http:
+    paths:
+    - path: /hello-world
+      pathPrefix: Prefix
+      backend:
+        service:
+          name: hello-world-service
+          port:
+            number: 80
