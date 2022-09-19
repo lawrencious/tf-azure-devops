@@ -80,7 +80,7 @@ stages:
           inputs:
             command: 'push'
             artifactoryService: 'tf-ado-artifactory-cli-conn'
-            targetRepo: 'tf-ado-docker-virtual'
+            targetRepo: 'tf-ado-docker-local'
             imageName: '$(artifactoryURL)/tf-ado-docker-local:$(Build.BuildId)'
 
   - stage: Deploy
