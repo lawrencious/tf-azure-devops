@@ -47,7 +47,7 @@ stages:
           displayName: 'Building image'
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'tf-ado-docker-virtual'
+            repository: 'tf-ado-docker-virtual/hello'
             command: 'build'
             Dockerfile: '**/Dockerfile'
         
