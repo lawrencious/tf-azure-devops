@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-world
@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: hello-world-pod
-        image: arungupta/helloworld-spring-boot:latest
+        image: tf-ado-docker-local/hello:latest
         ports: 
         - containerPort: 80
         - containerPort: 443
