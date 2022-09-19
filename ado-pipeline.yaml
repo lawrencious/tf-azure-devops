@@ -47,7 +47,7 @@ stages:
           displayName: 'Building image'
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'artifactory/tf-ado-docker-local'
+            repository: 'artifactory/tf-ado-docker-virtual'
             command: 'build'
             Dockerfile: '**/Dockerfile'
         
@@ -61,7 +61,7 @@ stages:
           displayName: 'Building and pushing image'
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'artifactory/tf-ado-docker-local'
+            repository: 'artifactory/tf-ado-docker-virtual'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
         
@@ -70,7 +70,7 @@ stages:
           displayName: 'Pushing image (Docker)'
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'artifactory/tf-ado-docker-local'
+            repository: 'artifactory/tf-ado-docker-virtual'
             command: 'push'
             Dockerfile: '**/Dockerfile'
 
@@ -80,7 +80,7 @@ stages:
           inputs:
             command: 'push'
             artifactoryService: 'tf-ado-artifactory-cli-conn'
-            targetRepo: 'tf-ado-docker-local'
+            targetRepo: 'tf-ado-docker-virtual'
             imageName: '$(imgBaseName)/tf-ado-docker-local:$(Build.BuildId)'
 
   - stage: Deploy
