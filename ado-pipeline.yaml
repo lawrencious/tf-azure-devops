@@ -61,7 +61,7 @@ stages:
           displayName: 'Building and pushing image'
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'tf-ado-docker-virtual'
+            repository: 'tf-ado-docker-virtual/hello'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
         
@@ -70,7 +70,7 @@ stages:
           displayName: 'Pushing image (Docker)'
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'tf-ado-docker-virtual'
+            repository: 'tf-ado-docker-virtual/hello'
             command: 'push'
             Dockerfile: '**/Dockerfile'
 
