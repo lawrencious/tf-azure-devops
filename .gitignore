@@ -133,3 +133,5 @@ dmypy.json
 .terraform.lock.hcl
 main.tfplan
 main.destroy.tfplan
+nginx-jfrog.conf
+nginx.conf

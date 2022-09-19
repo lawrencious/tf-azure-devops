@@ -47,13 +47,10 @@ stages:
           displayName: 'Building image'
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'tf-ado-docker-local/hello'
+            repository: 'tf-ado-docker-local'
             command: 'build'
             Dockerfile: '**/Dockerfile'
         
-        - script: |
-            docker image tag hello:$(Build.BuildId) tfadopipeline.jfrog.io/tf-ado-docker-local/hello:$(Build.BuildId)
-
         - script: |
             docker image ls
           condition: eq(variables.separetedBuildPush, 'true')
@@ -64,7 +61,7 @@ stages:
           displayName: 'Building and pushing image'
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'tf-ado-docker-local/hello'
+            repository: 'artifactory/tf-ado-docker-local'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
         
@@ -83,8 +80,8 @@ stages:
           inputs:
             command: 'push'
             artifactoryService: 'tf-ado-artifactory-cli-conn'
-            targetRepo: 'tf-ado-docker-local/hello'
-            imageName: '$(artifactoryURL)/tf-ado-docker-local/hello:$(Build.BuildId)'
+            targetRepo: 'tf-ado-docker-virtual'
+            imageName: '$(artifactoryURL)/tf-ado-docker-local:$(Build.BuildId)'
 
   - stage: Deploy
     dependsOn: Build
@@ -97,8 +94,8 @@ stages:
         inputs:
           connectionType: 'Kubernetes Service Connection'
           kubernetesServiceEndpoint: 'tf-ado-aks-connection'
-          command: '$(command)'
-          arguments: '$(arguments)'
+          command: 'apply'
+          arguments: '-f manifest.yaml'
           secretType: 'dockerRegistry'
           containerRegistryType: 'Container Registry'
           dockerRegistryEndpoint: 'tf-ado-artifactory-repo-connection'
