@@ -52,6 +52,9 @@ stages:
             Dockerfile: '**/Dockerfile'
         
         - script: |
+            docker image tag hello:$(Build.BuildId) tfadopipeline.jfrog.io/tf-ado-docker-local/hello:$(Build.BuildId)
+
+        - script: |
             docker image ls
           condition: eq(variables.separetedBuildPush, 'true')
           displayName: 'Listing local images'
@@ -80,7 +83,7 @@ stages:
           inputs:
             command: 'push'
             artifactoryService: 'tf-ado-artifactory-cli-conn'
-            targetRepo: 'tf-ado-docker-virtual'
+            targetRepo: 'tf-ado-docker-local'
             imageName: '$(imgBaseName)/tf-ado-docker-local:$(Build.BuildId)'
 
   - stage: Deploy
