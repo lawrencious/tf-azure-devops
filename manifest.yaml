@@ -43,7 +43,7 @@ spec:
   - http:
       paths:
       - path: /hello-world
-        pathPrefix: Prefix
+        pathType: Prefix
         backend:
           service:
             name: hello-world-service
