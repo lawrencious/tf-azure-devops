@@ -41,11 +41,11 @@ spec:
   ingressClassName: hello-world-ingress
   rules:
   - http:
-    paths:
-    - path: /hello-world
-      pathPrefix: Prefix
-      backend:
-        service:
-          name: hello-world-service
-          port:
-            number: 80
+      paths:
+      - path: /hello-world
+        pathPrefix: Prefix
+        backend:
+          service:
+            name: hello-world-service
+            port:
+              number: 80
