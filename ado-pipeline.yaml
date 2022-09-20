@@ -67,8 +67,8 @@ stages:
         inputs:
           connectionType: 'Kubernetes Service Connection'
           kubernetesServiceEndpoint: 'tf-ado-aks-connection'
-          command: '$(command)'
-          arguments: '$(arguments)'
+          command: 'apply' #'$(command)'
+          arguments: '-f manifest.yaml' #'$(arguments)'
           ${{ if eq( variables['Build.BuildId'], 0 ) }}:
             secretType: 'dockerRegistry'
             containerRegistryType: 'Container Registry'
