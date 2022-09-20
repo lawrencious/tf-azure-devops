@@ -4,17 +4,8 @@ metadata:
   name: hello-world
 spec:
   containers:
-  - name: hello-world
-    image: hello:latest
-    volumeMounts:
-    - name: foo
-      mountPath: "/etc/foo"
-      readOnly: true
-  volumes:
-  - name: foo
-    secret:
-      secretName: repo-secret
-      optional: false # default setting; "repo-secret" must exist
+  - name: tf-ado-docker-local
+    image: tf-ado-docker-local/hello:latest
   imagePullSecrets:
   - name: repo-secret
 
