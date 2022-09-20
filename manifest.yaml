@@ -6,9 +6,18 @@ spec:
   containers:
   - name: hello-world
     image: hello:latest
+    volumeMounts:
+    - name: foo
+      mountPath: "/etc/foo"
+      readOnly: true
+  volumes:
+  - name: foo
+    secret:
+      secretName: repo-secret
+      optional: false # default setting; "repo-secret" must exist
   imagePullSecrets:
   - name: repo-secret
-  
+
 ---
 
 apiVersion: apps/v1
