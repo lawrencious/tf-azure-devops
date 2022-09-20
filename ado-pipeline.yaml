@@ -4,7 +4,7 @@ variables:
     arguments: '-f manifest.yaml'
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
-    arguments: 'image deployment hello=hello:$(Build.BuildId) --all'
+    arguments: 'image deployment hello-world=$(imgBaseName)/hello:$(Build.BuildId) --all'
 
 trigger:
 - main
@@ -46,11 +46,6 @@ stages:
             repository: 'tf-ado-docker-local/hello'
             command: 'build'
             Dockerfile: '**/Dockerfile'
-        
-        - script: |
-            docker image ls
-          condition: eq(variables.separetedBuildPush, 'true')
-          displayName: 'Listing local images'
 
         - task: ArtifactoryDocker@1
           displayName: 'Pushing image (JFA)'
@@ -58,7 +53,7 @@ stages:
             command: 'push'
             artifactoryService: 'tf-ado-artifactory-cli-conn'
             targetRepo: 'tf-ado-docker-local/hello'
-            imageName: '$(artifactoryURL)/tf-ado-docker-local/hello:$(Build.BuildId)'
+            imageName: '$(imgBaseName)/hello:$(Build.BuildId)'
 
   - stage: Deploy
     dependsOn: Build
@@ -77,3 +72,5 @@ stages:
           secretType: 'dockerRegistry'
           containerRegistryType: 'Container Registry'
           dockerRegistryEndpoint: 'tf-ado-artifactory-repo-connection'
+          secretName: 'repo-secret'
+          forceUpdate: false
