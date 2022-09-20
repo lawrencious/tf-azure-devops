@@ -69,8 +69,8 @@ stages:
           kubernetesServiceEndpoint: 'tf-ado-aks-connection'
           command: '$(command)'
           arguments: '$(arguments)'
-          secretType: 'dockerRegistry'
-          containerRegistryType: 'Container Registry'
-          dockerRegistryEndpoint: 'tf-ado-artifactory-repo-connection'
-          secretName: 'repo-secret'
-          forceUpdate: false
+          ${{ if eq( variables['Build.BuildId'], 0 ) }}:
+            secretType: 'dockerRegistry'
+            containerRegistryType: 'Container Registry'
+            dockerRegistryEndpoint: 'tf-ado-artifactory-repo-connection'
+            secretName: 'repo-secret'
