@@ -1,13 +1,10 @@
 variables:
   ${{ if eq( variables['Build.BuildId'], 0 ) }}:
     command: 'apply'
-    arguments: '-f path/to/manifests'
+    arguments: '-f manifest.yaml'
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
-    arguments: 'image [TYPES] hello=hello:$(Build.BuildId) --all'
-  imgBaseName: '$(artifactoryURL)/artifactory'
-  usingJF: 'true'
-  separetedBuildPush: 'true'
+    arguments: 'image -f manifest.yaml hello=hello:$(Build.BuildId) --all'
 
 trigger:
 - main
@@ -43,7 +40,6 @@ stages:
             command: 'login'
         
         - task: Docker@2
-          condition: eq(variables.separetedBuildPush, 'true')
           displayName: 'Building image'
           inputs:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
@@ -55,28 +51,9 @@ stages:
             docker image ls
           condition: eq(variables.separetedBuildPush, 'true')
           displayName: 'Listing local images'
-        
-        - task: Docker@2
-          condition: and(ne(variables.usingJF, 'true'), ne(variables.separetedBuildPush, 'true'))
-          displayName: 'Building and pushing image'
-          inputs:
-            containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'tf-ado-docker-local/hello'
-            command: 'buildAndPush'
-            Dockerfile: '**/Dockerfile'
-        
-        - task: Docker@2
-          condition: and(ne(variables.usingJF, 'true'), eq(variables.separetedBuildPush, 'true'))
-          displayName: 'Pushing image (Docker)'
-          inputs:
-            containerRegistry: 'tf-ado-artifactory-repo-connection'
-            repository: 'tf-ado-docker-local/hello'
-            command: 'push'
-            Dockerfile: '**/Dockerfile'
 
         - task: ArtifactoryDocker@1
           displayName: 'Pushing image (JFA)'
-          condition: eq(variables.usingJF, 'true')
           inputs:
             command: 'push'
             artifactoryService: 'tf-ado-artifactory-cli-conn'
@@ -91,11 +68,12 @@ stages:
       steps:
       # Deploys containers
       - task: Kubernetes@1
+        displayName: 'Pulling image to AKS'
         inputs:
           connectionType: 'Kubernetes Service Connection'
           kubernetesServiceEndpoint: 'tf-ado-aks-connection'
-          command: 'apply'
-          arguments: '-f manifest.yaml'
+          command: '$(command)'
+          arguments: '$(arguments)'
           secretType: 'dockerRegistry'
           containerRegistryType: 'Container Registry'
           dockerRegistryEndpoint: 'tf-ado-artifactory-repo-connection'
