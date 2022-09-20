@@ -4,7 +4,7 @@ variables:
     arguments: '-f manifest.yaml'
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
-    arguments: 'image deployment hello-world=$(imgBaseName)/hello:$(Build.BuildId) --all'
+    arguments: 'image deployment hello-world=hello:$(Build.BuildId) --all'
 
 trigger:
 - main
