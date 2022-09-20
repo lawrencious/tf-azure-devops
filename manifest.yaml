@@ -8,7 +8,9 @@ spec:
     image: hello:latest
     ports:
     - containerPort: 80
+
 ---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -27,9 +29,10 @@ spec:
       - name: hello-world-pod
         image: tf-ado-docker-local/hello:latest
         ports: 
-        - containerPort: 80
-        - containerPort: 443
+        - containerPort: 8080
+
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -43,20 +46,22 @@ spec:
     port: 80
     targetPort: 8080
   type: LoadBalancer
+
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: hello-world-ingress
-spec:
-  ingressClassName: hello-world-ingress
-  rules:
-  - http:
-      paths:
-      - path: /hello-world
-        pathType: Prefix
-        backend:
-          service:
-            name: hello-world-service
-            port:
-              number: 80
+
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  name: hello-world-ingress
+#spec:
+#  ingressClassName: hello-world-ingress
+#  rules:
+#  - http:
+#      paths:
+#      - path: /hello-world
+#        pathType: Prefix
+#        backend:
+#          service:
+#            name: hello-world-service
+#            port:
+#              number: 80
