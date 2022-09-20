@@ -4,8 +4,9 @@ metadata:
   name: hello-world
 spec:
   containers:
-  - name: tf-ado-docker-local
-    image: tf-ado-docker-local/hello:latest
+  - name: hello-world
+    image: hello
+    imagePullPolicy: Always
   imagePullSecrets:
   - name: repo-secret
 
@@ -31,7 +32,6 @@ spec:
         ports: 
         - containerPort: 8080
         command: ["/hello"]
-        imagePullPolicy: IfNotPresent
 
 ---
 
