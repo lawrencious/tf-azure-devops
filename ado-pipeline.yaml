@@ -74,4 +74,3 @@ stages:
           containerRegistryType: 'Container Registry'
           dockerRegistryEndpoint: 'tf-ado-artifactory-repo-connection'
           secretName: 'repo-secret'
-          forceUpdate: false
