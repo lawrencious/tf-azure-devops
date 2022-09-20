@@ -4,7 +4,7 @@ variables:
     arguments: '-f manifest.yaml'
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
-    arguments: 'image deployment hello-world=hello:$(Build.BuildId) --all'
+    arguments: 'image deployment $(imgBaseName)/hello:$(Build.BuildId) --all'
 
 trigger:
 - main
@@ -53,7 +53,7 @@ stages:
             command: 'push'
             artifactoryService: 'tf-ado-artifactory-cli-conn'
             targetRepo: 'tf-ado-docker-local/hello'
-            imageName: '$(artifactoryURL)/tf-ado-docker-local/hello:$(Build.BuildId)'
+            imageName: '$(imgBaseName)/hello:$(Build.BuildId)'
 
   - stage: Deploy
     dependsOn: Build
@@ -69,9 +69,8 @@ stages:
           kubernetesServiceEndpoint: 'tf-ado-aks-connection'
           command: '$(command)'
           arguments: '$(arguments)'
-          ${{ if eq( variables['Build.BuildId'], 0 ) }}:
-            secretType: 'dockerRegistry'
-            containerRegistryType: 'Container Registry'
-            dockerRegistryEndpoint: 'tf-ado-artifactory-repo-connection'
-            secretName: 'repo-secret'
-            forceUpdate: false
+          secretType: 'dockerRegistry'
+          containerRegistryType: 'Container Registry'
+          dockerRegistryEndpoint: 'tf-ado-artifactory-repo-connection'
+          secretName: 'repo-secret'
+          forceUpdate: false
