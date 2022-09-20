@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
   - name: hello-world
-    image: hello
+    image: tfadopipeline.jfrog.io/tf-ado-docker-local/hello
     imagePullPolicy: Always
   imagePullSecrets:
   - name: repo-secret
@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: hello-world
-        image: hello:latest
+        image: tfadopipeline.jfrog.io/tf-ado-docker-local/hello
         ports: 
         - containerPort: 8080
         command: ["/hello"]
