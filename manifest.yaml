@@ -1,3 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-world
+spec:
+  containers:
+  - name: hello-world
+    image: hello:latest
+    volumeMounts:
+    - name: foo
+      mountPath: "/etc/foo"
+      readOnly: true
+  volumes:
+  - name: foo
+    secret:
+      secretName: repo-secret
+      optional: false # default setting; "mysecret" must exist
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,16 +34,18 @@ spec:
     spec:
       containers:
       - name: hello-world
-        image: tf-ado-docker-local/hello:latest
+        image: hello:latest
         ports: 
         - containerPort: 8080
+        command: ["/hello"]
+        imagePullPolicy: IfNotPresent
 
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: hello-world-service
+  name: hello-world
 spec:
   selector:
     app: hello-world
