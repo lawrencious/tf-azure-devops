@@ -132,6 +132,7 @@ dmypy.json
 tf/.terraform/
 tf/main.tfplan
 tf/main.destroy.tfplan
+tf/.terraform.lock.hcl
 nginx-jfrog.conf
 nginx.conf
 kubectlchmod
