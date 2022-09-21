@@ -62,6 +62,8 @@ stages:
     - job: Deploy
       steps:
       - script: |
+          az account set --subscription f89882ab-4505-45fb-b088-f9c3f90f834e
+          az aks get-credentials --resource-group BU-MT --name tf-ado-aks
           kubectl create secret docker-registry repo-secret --docker-server=$(ARTIFACTORYURL) --docker-username=$(ARTIFACTORY_USER) --docker-password=$(ARTIFACTORY_PASSWORD) --docker-email=$(ARTIFACTORY_USER)
 
       # Deploys containers
