@@ -129,9 +129,7 @@ dmypy.json
 .pyre/
 
 # Others from this very folder
-.terraform/
-.terraform.lock.hcl
-main.tfplan
-main.destroy.tfplan
+tf/
 nginx-jfrog.conf
 nginx.conf
+kubectlchmod

@@ -1,7 +1,7 @@
 variables:
   ${{ if eq( variables['Build.BuildId'], 0 ) }}:
     command: 'apply'
-    arguments: '-f deployment.yaml -f service.yaml -f ingress.yaml'
+    arguments: '-f manifest.yaml'
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image deployment hello-world=tfadopipeline.jfrog.io/tf-ado-docker-local/hello:$(Build.BuildId) --all'
@@ -48,7 +48,7 @@ stages:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             repository: 'tf-ado-docker-local/hello'
             command: 'build'
-            Dockerfile: '**/Dockerfile'
+            Dockerfile: '**/img/Dockerfile'
 
         - task: ArtifactoryDocker@1
           displayName: 'Pushing image (JFA)'
