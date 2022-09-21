@@ -61,6 +61,9 @@ stages:
     jobs:
     - job: Deploy
       steps:
+      - script: |
+          kubectl create secret docker-registry repo-secret --docker-server=$(ARTIFACTORYURL) --docker-username=$(ARTIFACTORY_USER) --docker-password=$(ARTIFACTORY_PASSWORD) --docker-email=$(ARTIFACTORY_USER)
+
       # Deploys containers
       - task: Kubernetes@1
         displayName: 'Pulling image to AKS'
@@ -68,7 +71,7 @@ stages:
           connectionType: 'Kubernetes Service Connection'
           kubernetesServiceEndpoint: 'tf-ado-aks-connection'
           command: 'apply'
-          arguments: '-f deployment.yaml -f service.yaml -f ingress.yaml -f secret.yaml'
+          arguments: '-f deployment.yaml -f service.yaml -f ingress.yaml'
           #${{ if eq( variables['Build.BuildId'], 0 ) }}:
           secretType: 'dockerRegistry'
           containerRegistryType: 'Container Registry'
