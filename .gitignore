@@ -129,7 +129,9 @@ dmypy.json
 .pyre/
 
 # Others from this very folder
-tf/
+tf/.terraform/
+tf/main.tfplan
+tf/main.destroy.tfplan
 nginx-jfrog.conf
 nginx.conf
 kubectlchmod
