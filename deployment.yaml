@@ -21,4 +21,4 @@ spec:
         image: tfadopipeline.jfrog.io/tf-ado-docker-local/hello:latest
         ports: 
         - containerPort: 8080
-        command: ["./hello"]
+        command: ["/hello"]
