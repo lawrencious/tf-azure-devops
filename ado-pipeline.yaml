@@ -61,10 +61,6 @@ stages:
     jobs:
     - job: Deploy
       steps:
-      - script: |
-          az account set --subscription f89882ab-4505-45fb-b088-f9c3f90f834e
-          az aks get-credentials --resource-group BU-MT --name tf-ado-aks
-          kubectl create secret docker-registry repo-secret --docker-server=$(ARTIFACTORYURL) --docker-username=$(ARTIFACTORY_USER) --docker-password=$(ARTIFACTORY_PASSWORD) --docker-email=$(ARTIFACTORY_USER)
 
       # Deploys containers
       - task: Kubernetes@1
@@ -75,7 +71,7 @@ stages:
           command: 'apply'
           arguments: '-f deployment.yaml -f service.yaml -f ingress.yaml'
           #${{ if eq( variables['Build.BuildId'], 0 ) }}:
-          secretType: 'dockerRegistry'
-          containerRegistryType: 'Container Registry'
-          dockerRegistryEndpoint: 'tf-ado-artifactory-repo-connection'
-          secretName: 'repo-secret'
+          #secretType: 'dockerRegistry'
+          #containerRegistryType: 'Container Registry'
+          #dockerRegistryEndpoint: 'tf-ado-artifactory-repo-connection'
+          #secretName: 'repo-secret'
