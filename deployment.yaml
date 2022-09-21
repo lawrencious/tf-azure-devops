@@ -15,7 +15,7 @@ spec:
         app: hello-world
     spec:
       imagePullSecrets:
-      - name: mysecret
+      - name: repo-secret
       containers:
       - name: hello-world
         image: tfadopipeline.jfrog.io/tf-ado-docker-local/hello:latest
