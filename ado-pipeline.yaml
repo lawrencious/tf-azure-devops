@@ -39,6 +39,9 @@ stages:
             containerRegistry: 'tf-ado-artifactory-repo-connection'
             command: 'login'
         
+        - script: |
+            ls -l
+        
         - task: Docker@2
           displayName: 'Building image'
           inputs:
