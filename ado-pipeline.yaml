@@ -1,7 +1,7 @@
 variables:
   ${{ if eq( variables['Build.BuildId'], 0 ) }}:
     command: 'apply'
-    arguments: '-f manifest.yaml'
+    arguments: '-f deployment.yaml -f service.yaml -f ingress.yaml'
   ${{ else }}:
     command: 'set'  # 'rollout' is not yet available as a kubectl command option 
     arguments: 'image deployment hello-world=hello:$(Build.BuildId) --all'
@@ -71,8 +71,8 @@ stages:
         inputs:
           connectionType: 'Kubernetes Service Connection'
           kubernetesServiceEndpoint: 'tf-ado-aks-connection'
-          command: 'apply'
-          arguments: '-f deployment.yaml -f service.yaml -f ingress.yaml'
+          command: '$(command)'
+          arguments: '$(arguments)'
           #${{ if eq( variables['Build.BuildId'], 0 ) }}:
           #secretType: 'dockerRegistry'
           #containerRegistryType: 'Container Registry'
