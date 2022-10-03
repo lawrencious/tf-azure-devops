@@ -14,6 +14,13 @@ resource "azurerm_subnet" "vm_subnet" {
   address_prefixes = [var.vm_subnet]
 }
 
+resource "azurerm_subnet" "agic_subnet" {
+  name = "${var.prefix}-agic-subnet"
+  resource_group_name = data.azurerm_resource_group.rg.name
+  virtual_network_name = data.azurerm_virtual_network.vn.name
+  address_prefixes = [var.agic_subnet]
+}
+
 resource "azurerm_subnet" "aks_subnet" {
   name = "${var.prefix}-aks-subnet"
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -222,6 +229,69 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 }
 
+resource "azurerm_public_ip" "agic-ip" {
+  name                = "${var.prefix}-agic-ip"
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location = data.azurerm_resource_group.rg.location
+  allocation_method   = "Static"
+  sku = "Standard"
+}
+
+resource "azurerm_application_gateway" "agic" {
+  name                = "${var.prefix}-agic"
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location = data.azurerm_resource_group.rg.location
+
+  sku {
+    name     = "Standard_v2"
+    tier     = "Standard_v2"
+    capacity = 2
+  }
+
+  gateway_ip_configuration {
+    name      = "my-gateway-ip-configuration"
+    subnet_id = azurerm_subnet.agic_subnet.id
+  }
+
+  frontend_port {
+    name = "agic-fe-port-name"
+    port = 80
+  }
+
+  frontend_ip_configuration {
+    name                 = "agic-fe-ip-conf-name"
+    public_ip_address_id = azurerm_public_ip.agic-ip.id
+  }
+
+  backend_address_pool {
+    name = "agic-be-pool-name"
+  }
+
+  backend_http_settings {
+    name                  = "agic-http-settings-name"
+    cookie_based_affinity = "Disabled"
+    port                  = 80
+    protocol              = "Http"
+    request_timeout       = 60
+  }
+
+  http_listener {
+    name                           = "agic-http-listener-name"
+    frontend_ip_configuration_name = "agic-fe-ip-conf-name"
+    frontend_port_name             = "agic-fe-port-name"
+    protocol                       = "Http"
+  }
+
+  request_routing_rule {
+    name                       = "agic-routing-rule-name"
+    rule_type                  = "Basic"
+    http_listener_name         = "agic-http-listener-name"
+    backend_address_pool_name  = "agic-be-pool-name"
+    backend_http_settings_name = "agic-http-settings-name"
+    priority = 1
+  }
+}
+
 resource "azurerm_kubernetes_cluster" "aks" {
   name = "${var.prefix}-aks"
   location = data.azurerm_resource_group.rg.location
@@ -230,7 +300,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   default_node_pool {
     name = "default"
-    node_count = 1
+    node_count = 2
     vm_size = "Standard_D2_v2"
     vnet_subnet_id = azurerm_subnet.aks_subnet.id
   }
@@ -245,4 +315,36 @@ resource "azurerm_kubernetes_cluster" "aks" {
     dns_service_ip = var.dns_service_ip
     docker_bridge_cidr = var.docker_bridge_cidr
   }
+
+  ingress_application_gateway {
+    gateway_id = azurerm_application_gateway.agic.id
+  }
+}
+
+# ERROR: resulting list is empty with AKS node RG
+data "azurerm_resources" "aks-vnet" {
+  resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group
+  type = "Microsoft.Network/virtualNetworks"
+}
+
+output "value" {
+  value = azurerm_kubernetes_cluster.aks.node_resource_group
+}
+
+output "value2" {
+  value = data.azurerm_resources.aks-vnet
+}
+
+resource "azurerm_virtual_network_peering" "peerAGICtoAKS" {
+  name                      = "${var.prefix}-peer-agic2aks"
+  resource_group_name       = data.azurerm_resource_group.rg.name
+  virtual_network_name      = data.azurerm_virtual_network.vn.name
+  remote_virtual_network_id = data.azurerm_resources.aks-vnet.resources[0].id
+}
+
+resource "azurerm_virtual_network_peering" "peerAKStoAGIC" {
+  name                      = "${var.prefix}-peer-aks2agic"
+  resource_group_name       = data.azurerm_resource_group.rg.name
+  virtual_network_name      = data.azurerm_resources.aks-vnet.resources[0].name
+  remote_virtual_network_id = data.azurerm_virtual_network.vn.id
 }

@@ -16,6 +16,10 @@ variable inner_lb_subnet {
   default = "10.1.3.0/24"
 }
 
+variable agic_subnet {
+  default = "10.0.0.0/24"
+}
+
 # Definition of (aks.network_profile.) service_cidr, dns_service_ip,
 #   docker_bridge_cidr.
 # To avoid conflicts between Service CIDR and other nets/vnets - the following
