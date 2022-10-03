@@ -203,6 +203,11 @@ resource "azurerm_network_security_group" "nsg" {
   } ]
 }
 
+resource "azurerm_network_interface_security_group_association" "ni-nsg-association" {
+  network_interface_id = azurerm_network_interface.vm_ni.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
+}
+
 resource "azurerm_linux_virtual_machine" "vm" {
   name = "${var.prefix}-ImgRepo"
   resource_group_name = data.azurerm_resource_group.rg.name
